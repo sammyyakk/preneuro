@@ -24,15 +24,15 @@ export function RecentAssessments({ assessments }: RecentAssessmentsProps) {
   return (
     <Card hover className="h-full">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-            <FileText className="w-4 h-4 text-primary" />
+        <div className="flex items-center gap-2.5">
+          <div className="w-7 h-7 rounded-md bg-muted flex items-center justify-center">
+            <FileText className="w-3.5 h-3.5 text-foreground" />
           </div>
-          <CardTitle>Recent Assessments</CardTitle>
+          <CardTitle className="text-sm font-medium">Recent Assessments</CardTitle>
         </div>
         <Link href="/assessments">
-          <Button variant="ghost" size="sm" className="gap-1 text-muted-foreground hover:text-foreground">
-            View all
+          <Button variant="ghost" size="sm" className="gap-1 text-xs text-muted-foreground hover:text-foreground">
+            View All
             <ArrowRight className="w-3 h-3" />
           </Button>
         </Link>
@@ -40,17 +40,17 @@ export function RecentAssessments({ assessments }: RecentAssessmentsProps) {
       <CardContent>
         {recentAssessments.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-center">
-            <div className="w-16 h-16 rounded-2xl bg-muted/50 flex items-center justify-center mb-4">
-              <FileText className="w-8 h-8 text-muted-foreground/50" />
+            <div className="w-12 h-12 rounded-lg bg-muted flex items-center justify-center mb-3">
+              <FileText className="w-5 h-5 text-muted-foreground" />
             </div>
-            <p className="text-muted-foreground font-medium">No assessments yet</p>
-            <p className="text-sm text-muted-foreground/70 mt-1">Create your first assessment to get started</p>
+            <p className="text-sm font-medium">No Assessments Yet</p>
+            <p className="text-xs text-muted-foreground mt-1">Create your first assessment to get started.</p>
             <Link href="/assessments/new" className="mt-4">
               <Button size="sm">Create Assessment</Button>
             </Link>
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-1.5">
             {recentAssessments.map((assessment, index) => {
               const maxRisk = Math.max(
                 assessment.alzheimer_risk || 0,
@@ -63,34 +63,34 @@ export function RecentAssessments({ assessments }: RecentAssessmentsProps) {
                 <Link
                   key={assessment.id}
                   href={`/assessments/${assessment.id}`}
-                  className="group flex items-center justify-between p-3 rounded-xl bg-muted/30 hover:bg-muted/60 transition-all duration-200 hover:scale-[1.01]"
-                  style={{ animationDelay: `${index * 50}ms` }}
+                  className="group flex items-center justify-between p-3 rounded-lg hover:bg-muted/60 transition-all duration-200"
+                  style={{ animationDelay: `${index * 40}ms` }}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-sm font-semibold text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-200">
-                      #{assessment.id}
+                    <div className="w-8 h-8 rounded-md bg-muted flex items-center justify-center text-xs font-mono font-medium text-foreground group-hover:bg-foreground group-hover:text-background transition-colors duration-200">
+                      {assessment.id}
                     </div>
                     <div>
-                      <p className="font-medium text-sm group-hover:text-primary transition-colors">
+                      <p className="text-sm font-medium group-hover:text-foreground transition-colors">
                         Assessment #{assessment.id}
                       </p>
-                      <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-0.5">
+                      <div className="flex items-center gap-1.5 text-[0.6875rem] text-muted-foreground mt-0.5">
                         <Clock className="w-3 h-3" />
                         {format(new Date(assessment.created_at), "MMM d, h:mm a")}
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2.5">
                     {assessment.status === "completed" ? (
-                      <Badge variant="outline" className={`${riskInfo.className} text-xs`}>
+                      <Badge variant="outline" className={`${riskInfo.className} text-[0.625rem]`}>
                         {riskInfo.label} Risk
                       </Badge>
                     ) : (
-                      <Badge variant="secondary" className="text-xs">
+                      <Badge variant="secondary" className="text-[0.625rem] capitalize">
                         {assessment.status}
                       </Badge>
                     )}
-                    <Eye className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <Eye className="w-3.5 h-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                   </div>
                 </Link>
               );

@@ -8,10 +8,10 @@ import {
   ClipboardList,
   Brain,
   Menu,
-  Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { useState } from "react";
 
 const navigation = [
@@ -24,8 +24,8 @@ function NavLinks({ onClick }: { onClick?: () => void }) {
   const pathname = usePathname();
 
   return (
-    <nav className="flex flex-col gap-1.5">
-      {navigation.map((item, index) => {
+    <nav className="flex flex-col gap-1">
+      {navigation.map((item) => {
         const isActive = pathname === item.href;
         return (
           <Link
@@ -33,23 +33,17 @@ function NavLinks({ onClick }: { onClick?: () => void }) {
             href={item.href}
             onClick={onClick}
             className={cn(
-              "group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200",
-              "hover:bg-primary/10 hover:translate-x-1",
+              "group flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium transition-all duration-200",
               isActive
-                ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
-                : "text-muted-foreground hover:text-foreground"
+                ? "bg-foreground text-background"
+                : "text-muted-foreground hover:text-foreground hover:bg-muted"
             )}
-            style={{ animationDelay: `${index * 50}ms` }}
           >
             <item.icon className={cn(
-              "h-5 w-5 transition-transform duration-200",
-              "group-hover:scale-110",
-              isActive && "animate-float"
+              "h-4 w-4 transition-transform duration-200",
+              "group-hover:scale-105",
             )} />
             <span>{item.name}</span>
-            {isActive && (
-              <Sparkles className="w-3 h-3 ml-auto opacity-70" />
-            )}
           </Link>
         );
       })}
@@ -65,37 +59,43 @@ export function Sidebar() {
       {/* Mobile menu button */}
       <div className="lg:hidden fixed top-4 left-4 z-50">
         <Sheet open={open} onOpenChange={setOpen}>
-          <SheetTrigger className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-border/50 bg-background/80 backdrop-blur-xl shadow-lg hover:bg-accent hover:scale-105 transition-all duration-200">
-            <Menu className="h-5 w-5" />
+          <SheetTrigger className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-border bg-background/90 backdrop-blur-sm transition-all duration-200 hover:bg-muted active:scale-95">
+            <Menu className="h-4 w-4" />
           </SheetTrigger>
-          <SheetContent side="left" className="w-72 p-0 border-r-0">
-            <div className="h-full flex flex-col bg-gradient-to-b from-background to-muted/30">
+          <SheetContent side="left" className="w-64 p-0 border-r border-border">
+            <div className="h-full flex flex-col bg-background">
               {/* Logo */}
-              <div className="flex items-center gap-3 p-6 border-b border-border/50">
-                <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center shadow-lg shadow-primary/25">
-                  <Brain className="h-6 w-6 text-white brain-pulse" />
+              <div className="flex items-center gap-3 h-16 px-5 border-b border-border">
+                <div className="w-8 h-8 rounded-lg bg-foreground flex items-center justify-center">
+                  <Brain className="h-4 w-4 text-background" />
                 </div>
                 <div>
-                  <span className="text-xl font-bold gradient-text">PreNeuro</span>
-                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider">AI Diagnostics</p>
+                  <span className="text-sm font-semibold tracking-tight">PreNeuro</span>
+                  <p className="text-[0.625rem] text-muted-foreground uppercase tracking-widest font-medium">AI Diagnostics</p>
                 </div>
               </div>
-              
+
               {/* Navigation */}
-              <div className="flex-1 p-4">
+              <div className="flex-1 p-3 pt-4">
+                <p className="text-[0.625rem] font-semibold text-muted-foreground uppercase tracking-widest mb-3 px-3">
+                  Menu
+                </p>
                 <NavLinks onClick={() => setOpen(false)} />
               </div>
-              
-              {/* User section */}
-              <div className="p-4 border-t border-border/50 bg-muted/30">
-                <div className="flex items-center gap-3 p-3 rounded-xl bg-background/50">
-                  <div className="w-10 h-10 rounded-full stat-gradient-1 flex items-center justify-center shadow-md">
-                    <span className="text-sm font-semibold text-white">SC</span>
+
+              {/* Footer */}
+              <div className="p-3 border-t border-border">
+                <div className="flex items-center justify-between px-3 py-2">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-7 h-7 rounded-full bg-foreground flex items-center justify-center">
+                      <span className="text-[0.625rem] font-semibold text-background">AM</span>
+                    </div>
+                    <div>
+                      <p className="text-xs font-medium">Dr. Arjun Mehta</p>
+                      <p className="text-[0.625rem] text-muted-foreground">Neurologist</p>
+                    </div>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold truncate">Dr. Sarah Chen</p>
-                    <p className="text-xs text-muted-foreground">Neurologist</p>
-                  </div>
+                  <ThemeToggle />
                 </div>
               </div>
             </div>
@@ -103,37 +103,45 @@ export function Sidebar() {
         </Sheet>
       </div>
 
+      {/* Mobile theme toggle */}
+      <div className="lg:hidden fixed top-4 right-4 z-50">
+        <ThemeToggle />
+      </div>
+
       {/* Desktop sidebar */}
-      <aside className="hidden lg:flex lg:flex-col lg:w-72 lg:fixed lg:inset-y-0 bg-gradient-to-b from-card to-muted/20 border-r border-border/50">
+      <aside className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 bg-background border-r border-border">
         {/* Logo */}
-        <div className="flex items-center gap-3 h-20 px-6 border-b border-border/50">
-          <div className="w-11 h-11 rounded-xl gradient-primary flex items-center justify-center shadow-lg shadow-primary/25 animate-fade-in">
-            <Brain className="h-6 w-6 text-white brain-pulse" />
+        <div className="flex items-center gap-3 h-16 px-5 border-b border-border animate-fade-in">
+          <div className="w-8 h-8 rounded-lg bg-foreground flex items-center justify-center">
+            <Brain className="h-4 w-4 text-background" />
           </div>
-          <div className="animate-fade-in" style={{ animationDelay: '100ms' }}>
-            <span className="text-xl font-bold gradient-text">PreNeuro</span>
-            <p className="text-[10px] text-muted-foreground uppercase tracking-wider">AI Diagnostics</p>
+          <div>
+            <span className="text-sm font-semibold tracking-tight">PreNeuro</span>
+            <p className="text-[0.625rem] text-muted-foreground uppercase tracking-widest font-medium">AI Diagnostics</p>
           </div>
         </div>
-        
+
         {/* Navigation */}
-        <div className="flex-1 p-4 pt-6">
-          <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-3 px-4">
-            Navigation
+        <div className="flex-1 p-3 pt-6">
+          <p className="text-[0.625rem] font-semibold text-muted-foreground uppercase tracking-widest mb-3 px-3">
+            Menu
           </p>
           <NavLinks />
         </div>
-        
-        {/* User section */}
-        <div className="p-4 border-t border-border/50">
-          <div className="flex items-center gap-3 p-3 rounded-xl bg-muted/50 hover:bg-muted transition-colors duration-200 cursor-pointer group">
-            <div className="w-10 h-10 rounded-full stat-gradient-1 flex items-center justify-center shadow-md group-hover:scale-105 transition-transform duration-200">
-              <span className="text-sm font-semibold text-white">SC</span>
+
+        {/* Footer */}
+        <div className="p-3 border-t border-border">
+          <div className="flex items-center justify-between px-3 py-2">
+            <div className="flex items-center gap-2.5">
+              <div className="w-7 h-7 rounded-full bg-foreground flex items-center justify-center">
+                <span className="text-[0.625rem] font-semibold text-background">AM</span>
+              </div>
+              <div>
+                <p className="text-xs font-medium">Dr. Arjun Mehta</p>
+                <p className="text-[0.625rem] text-muted-foreground">Neurologist</p>
+              </div>
             </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold truncate">Dr. Sarah Chen</p>
-              <p className="text-xs text-muted-foreground">Neurologist</p>
-            </div>
+            <ThemeToggle />
           </div>
         </div>
       </aside>

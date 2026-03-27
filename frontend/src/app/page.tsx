@@ -6,7 +6,7 @@ import { DashboardStats } from "@/components/dashboard/stats";
 import { RecentAssessments } from "@/components/dashboard/recent-assessments";
 import { RiskChart } from "@/components/dashboard/risk-chart";
 import { Button } from "@/components/ui/button";
-import { Plus, Users, Activity, Sparkles } from "lucide-react";
+import { Plus, Users, Activity } from "lucide-react";
 import Link from "next/link";
 
 export default function DashboardPage() {
@@ -39,33 +39,32 @@ export default function DashboardPage() {
       })) || [];
 
   return (
-    <div className="space-y-8 max-w-7xl mx-auto">
+    <div className="space-y-10">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 animate-fade-in">
+      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 animate-fade-in">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <Activity className="w-5 h-5 text-primary animate-float" />
-            <span className="text-sm font-medium text-primary">Dashboard</span>
+          <div className="flex items-center gap-2 mb-2">
+            <Activity className="w-3.5 h-3.5 text-muted-foreground" />
+            <span className="mono">Dashboard</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
-            Welcome back, <span className="gradient-text">Dr. Chen</span>
+          <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight">
+            Welcome Back, Dr. Mehta
           </h1>
-          <p className="text-muted-foreground mt-1">
-            Here&apos;s your patient overview and recent activity
+          <p className="text-sm text-muted-foreground mt-1">
+            Here&apos;s your patient overview and recent activity.
           </p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex gap-2">
           <Link href="/patients">
-            <Button variant="outline" size="lg" className="gap-2">
-              <Users className="h-4 w-4" />
-              <span className="hidden sm:inline">View </span>Patients
+            <Button variant="outline" size="sm" className="gap-2">
+              <Users className="h-3.5 w-3.5" />
+              Patients
             </Button>
           </Link>
           <Link href="/assessments/new">
-            <Button size="lg" className="gap-2">
-              <Plus className="h-4 w-4" />
-              <span className="hidden sm:inline">New </span>Assessment
-              <Sparkles className="w-3 h-3 opacity-70" />
+            <Button size="sm" className="gap-2">
+              <Plus className="h-3.5 w-3.5" />
+              New Assessment
             </Button>
           </Link>
         </div>
@@ -79,12 +78,12 @@ export default function DashboardPage() {
         completedAssessments={completedAssessments}
       />
 
-      {/* Charts section */}
+      {/* Charts Section */}
       <div className="grid gap-6 lg:grid-cols-2">
-        <div className="animate-fade-in" style={{ animationDelay: '400ms', animationFillMode: 'forwards', opacity: 0 }}>
+        <div className="animate-fade-in" style={{ animationDelay: '200ms', animationFillMode: 'forwards', opacity: 0 }}>
           <RecentAssessments assessments={assessments?.items || []} />
         </div>
-        <div className="animate-fade-in" style={{ animationDelay: '500ms', animationFillMode: 'forwards', opacity: 0 }}>
+        <div className="animate-fade-in" style={{ animationDelay: '300ms', animationFillMode: 'forwards', opacity: 0 }}>
           <RiskChart data={chartData} />
         </div>
       </div>

@@ -14,7 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Plus, Eye, ClipboardList, Sparkles, Clock, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Plus, Eye, ClipboardList, Clock, AlertCircle, CheckCircle2 } from "lucide-react";
 import { format } from "date-fns";
 import Link from "next/link";
 
@@ -22,18 +22,18 @@ function getRiskBadge(risk: number | undefined) {
   if (risk === undefined) return null;
   if (risk < 0.3)
     return (
-      <Badge variant="outline" className="risk-low font-medium">
+      <Badge variant="outline" className="risk-low text-[0.625rem] font-medium">
         Low ({(risk * 100).toFixed(0)}%)
       </Badge>
     );
   if (risk < 0.6)
     return (
-      <Badge variant="outline" className="risk-moderate font-medium">
+      <Badge variant="outline" className="risk-moderate text-[0.625rem] font-medium">
         Moderate ({(risk * 100).toFixed(0)}%)
       </Badge>
     );
   return (
-    <Badge variant="outline" className="risk-high font-medium">
+    <Badge variant="outline" className="risk-high text-[0.625rem] font-medium">
       High ({(risk * 100).toFixed(0)}%)
     </Badge>
   );
@@ -43,34 +43,34 @@ function getStatusBadge(status: string) {
   switch (status) {
     case "pending":
       return (
-        <Badge variant="secondary" className="gap-1.5 bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/50 dark:text-amber-400">
+        <Badge variant="secondary" className="gap-1.5 text-[0.625rem] bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-800">
           <Clock className="w-3 h-3" />
           Pending
         </Badge>
       );
     case "processing":
       return (
-        <Badge variant="secondary" className="gap-1.5 bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/50 dark:text-blue-400">
-          <span className="w-2 h-2 rounded-full bg-current animate-pulse" />
+        <Badge variant="secondary" className="gap-1.5 text-[0.625rem] bg-sky-50 text-sky-700 border-sky-200 dark:bg-sky-950/30 dark:text-sky-400 dark:border-sky-800">
+          <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" />
           Processing
         </Badge>
       );
     case "completed":
       return (
-        <Badge variant="secondary" className="gap-1.5 risk-low">
+        <Badge variant="secondary" className="gap-1.5 text-[0.625rem] risk-low">
           <CheckCircle2 className="w-3 h-3" />
           Completed
         </Badge>
       );
     case "failed":
       return (
-        <Badge variant="destructive" className="gap-1.5">
+        <Badge variant="destructive" className="gap-1.5 text-[0.625rem]">
           <AlertCircle className="w-3 h-3" />
           Failed
         </Badge>
       );
     default:
-      return <Badge variant="secondary">{status}</Badge>;
+      return <Badge variant="secondary" className="text-[0.625rem] capitalize">{status}</Badge>;
   }
 }
 
@@ -90,66 +90,65 @@ export default function AssessmentsPage() {
   const patientMap = new Map(patients?.items.map((p) => [p.id, p]) || []);
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto">
+    <div className="space-y-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 animate-fade-in">
+      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 animate-fade-in">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <ClipboardList className="w-5 h-5 text-primary" />
-            <span className="text-sm font-medium text-primary">Assessments</span>
+          <div className="flex items-center gap-2 mb-2">
+            <ClipboardList className="w-3.5 h-3.5 text-muted-foreground" />
+            <span className="mono">Assessments</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight">
             Risk Assessments
           </h1>
-          <p className="text-muted-foreground mt-1">
-            View and manage patient neurodegenerative risk assessments
+          <p className="text-sm text-muted-foreground mt-1">
+            View and manage patient neurodegenerative risk assessments.
           </p>
         </div>
         <Link href="/assessments/new">
-          <Button size="lg" className="gap-2">
-            <Plus className="h-4 w-4" />
+          <Button size="sm" className="gap-2">
+            <Plus className="h-3.5 w-3.5" />
             New Assessment
-            <Sparkles className="w-3 h-3 opacity-70" />
           </Button>
         </Link>
       </div>
 
-      <Card hover className="animate-fade-in" style={{ animationDelay: '100ms' }}>
+      <Card hover className="animate-fade-in" style={{ animationDelay: '80ms' }}>
         <CardHeader />
         <CardContent>
           {isLoading ? (
             <div className="flex flex-col items-center justify-center py-16">
-              <div className="w-10 h-10 border-3 border-primary/30 border-t-primary rounded-full animate-spin" />
-              <p className="text-muted-foreground mt-4">Loading assessments...</p>
+              <div className="w-8 h-8 border-2 border-muted-foreground/20 border-t-foreground rounded-full animate-spin" />
+              <p className="text-sm text-muted-foreground mt-4">Loading assessments...</p>
             </div>
           ) : assessments?.items.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-center">
-              <div className="w-20 h-20 rounded-2xl bg-muted/50 flex items-center justify-center mb-4">
-                <ClipboardList className="w-10 h-10 text-muted-foreground/50" />
+              <div className="w-14 h-14 rounded-lg bg-muted flex items-center justify-center mb-3">
+                <ClipboardList className="w-6 h-6 text-muted-foreground" />
               </div>
-              <p className="text-lg font-medium">No assessments yet</p>
-              <p className="text-muted-foreground mt-1 max-w-sm">
-                Create your first assessment to start analyzing patient risk factors
+              <p className="text-sm font-medium">No Assessments Yet</p>
+              <p className="text-xs text-muted-foreground mt-1 max-w-sm">
+                Create your first assessment to start analyzing patient risk factors.
               </p>
-              <Link href="/assessments/new" className="mt-6">
-                <Button size="lg" className="gap-2">
-                  <Plus className="w-4 h-4" />
+              <Link href="/assessments/new" className="mt-4">
+                <Button size="sm" className="gap-2">
+                  <Plus className="w-3.5 h-3.5" />
                   Create Assessment
                 </Button>
               </Link>
             </div>
           ) : (
             <>
-              <div className="rounded-xl border border-border/50 overflow-hidden">
+              <div className="rounded-lg border border-border overflow-hidden">
                 <Table>
                   <TableHeader>
                     <TableRow className="bg-muted/30 hover:bg-muted/30">
-                      <TableHead className="font-semibold">ID</TableHead>
-                      <TableHead className="font-semibold">Patient</TableHead>
-                      <TableHead className="font-semibold">Date</TableHead>
-                      <TableHead className="font-semibold">Status</TableHead>
-                      <TableHead className="font-semibold">Max Risk</TableHead>
-                      <TableHead className="font-semibold w-[80px]">Actions</TableHead>
+                      <TableHead className="text-xs font-semibold uppercase tracking-wider">ID</TableHead>
+                      <TableHead className="text-xs font-semibold uppercase tracking-wider">Patient</TableHead>
+                      <TableHead className="text-xs font-semibold uppercase tracking-wider">Date</TableHead>
+                      <TableHead className="text-xs font-semibold uppercase tracking-wider">Status</TableHead>
+                      <TableHead className="text-xs font-semibold uppercase tracking-wider">Max Risk</TableHead>
+                      <TableHead className="text-xs font-semibold uppercase tracking-wider w-[80px]">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -161,34 +160,34 @@ export default function AssessmentsPage() {
                         assessment.als_risk || 0
                       );
                       return (
-                        <TableRow 
+                        <TableRow
                           key={assessment.id}
                           className="group hover:bg-muted/50 transition-colors animate-fade-in"
-                          style={{ animationDelay: `${index * 50}ms`, animationFillMode: 'forwards', opacity: 0 }}
+                          style={{ animationDelay: `${index * 40}ms`, animationFillMode: 'forwards', opacity: 0 }}
                         >
                           <TableCell>
-                            <span className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-primary/10 text-sm font-semibold text-primary">
-                              #{assessment.id}
+                            <span className="inline-flex items-center justify-center w-8 h-8 rounded-md bg-muted text-xs font-mono font-medium text-foreground">
+                              {assessment.id}
                             </span>
                           </TableCell>
                           <TableCell>
                             {patient ? (
                               <Link
                                 href={`/patients/${patient.id}`}
-                                className="flex items-center gap-3 hover:text-primary transition-colors"
+                                className="flex items-center gap-2.5 hover:text-foreground transition-colors"
                               >
-                                <div className="w-8 h-8 rounded-full stat-gradient-2 flex items-center justify-center text-[10px] font-semibold text-white">
+                                <div className="w-7 h-7 rounded-md bg-foreground/80 flex items-center justify-center text-[9px] font-semibold text-background">
                                   {patient.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                                 </div>
-                                <span className="font-medium">{patient.name}</span>
+                                <span className="text-sm font-medium">{patient.name}</span>
                               </Link>
                             ) : (
-                              <span className="text-muted-foreground">Patient #{assessment.patient_id}</span>
+                              <span className="text-sm text-muted-foreground">Patient #{assessment.patient_id}</span>
                             )}
                           </TableCell>
-                          <TableCell className="text-muted-foreground">
+                          <TableCell className="text-sm text-muted-foreground">
                             <div className="flex items-center gap-1.5">
-                              <Clock className="w-3.5 h-3.5" />
+                              <Clock className="w-3 h-3" />
                               {format(new Date(assessment.created_at), "MMM d, yyyy")}
                             </div>
                           </TableCell>
@@ -200,12 +199,12 @@ export default function AssessmentsPage() {
                           </TableCell>
                           <TableCell>
                             <Link href={`/assessments/${assessment.id}`}>
-                              <Button 
-                                variant="ghost" 
-                                size="icon-sm" 
-                                className="opacity-0 group-hover:opacity-100 transition-opacity hover:bg-primary/10 hover:text-primary"
+                              <Button
+                                variant="ghost"
+                                size="icon-sm"
+                                className="opacity-0 group-hover:opacity-100 transition-opacity hover:bg-muted"
                               >
-                                <Eye className="h-4 w-4" />
+                                <Eye className="h-3.5 w-3.5" />
                               </Button>
                             </Link>
                           </TableCell>
@@ -217,8 +216,8 @@ export default function AssessmentsPage() {
               </div>
 
               {assessments && assessments.total > 10 && (
-                <div className="flex items-center justify-between mt-6 pt-4 border-t border-border/50">
-                  <p className="text-sm text-muted-foreground">
+                <div className="flex items-center justify-between mt-6 pt-4 border-t border-border">
+                  <p className="text-xs text-muted-foreground">
                     Showing <span className="font-medium text-foreground">{(page - 1) * 10 + 1}</span> to{" "}
                     <span className="font-medium text-foreground">{Math.min(page * 10, assessments.total)}</span> of{" "}
                     <span className="font-medium text-foreground">{assessments.total}</span> assessments

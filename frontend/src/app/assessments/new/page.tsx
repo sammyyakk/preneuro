@@ -17,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowLeft, Brain, Upload } from "lucide-react";
+import { ArrowLeft, Brain, Upload, ClipboardList } from "lucide-react";
 import Link from "next/link";
 
 const symptomsList = [
@@ -82,29 +82,33 @@ function NewAssessmentContent() {
   };
 
   return (
-    <div className="space-y-6 max-w-3xl">
-      <div className="flex items-center gap-4">
+    <div className="space-y-8 max-w-3xl">
+      <div className="flex items-center gap-4 animate-fade-in">
         <Link href="/assessments">
-          <Button variant="ghost" size="icon">
+          <Button variant="ghost" size="icon-sm">
             <ArrowLeft className="h-4 w-4" />
           </Button>
         </Link>
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">New Assessment</h1>
-          <p className="text-muted-foreground">
-            Create a new patient assessment for AI analysis
+          <div className="flex items-center gap-2 mb-1">
+            <ClipboardList className="w-3.5 h-3.5 text-muted-foreground" />
+            <span className="mono">New Assessment</span>
+          </div>
+          <h1 className="text-2xl font-semibold tracking-tight">Create Assessment</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">
+            Create a new patient assessment for AI analysis.
           </p>
         </div>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        <Card>
+        <Card className="animate-fade-in" style={{ animationDelay: '80ms', animationFillMode: 'forwards', opacity: 0 }}>
           <CardHeader>
-            <CardTitle>Select Patient</CardTitle>
+            <CardTitle className="text-sm font-medium">Select Patient</CardTitle>
           </CardHeader>
           <CardContent>
             <Select value={selectedPatient} onValueChange={handlePatientChange}>
-              <SelectTrigger>
+              <SelectTrigger className="h-10">
                 <SelectValue placeholder="Select a patient" />
               </SelectTrigger>
               <SelectContent>
@@ -116,26 +120,26 @@ function NewAssessmentContent() {
               </SelectContent>
             </Select>
             {patients?.items.length === 0 && (
-              <p className="text-sm text-muted-foreground mt-2">
+              <p className="text-xs text-muted-foreground mt-2">
                 No patients found.{" "}
-                <Link href="/patients" className="text-primary hover:underline">
-                  Add a patient first
+                <Link href="/patients" className="text-foreground underline underline-offset-4 hover:text-foreground/80">
+                  Add a patient first.
                 </Link>
               </p>
             )}
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="animate-fade-in" style={{ animationDelay: '160ms', animationFillMode: 'forwards', opacity: 0 }}>
           <CardHeader>
-            <CardTitle>Symptoms Assessment</CardTitle>
+            <CardTitle className="text-sm font-medium">Symptoms Assessment</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid gap-3 md:grid-cols-2">
               {symptomsList.map((symptom) => (
                 <div
                   key={symptom.key}
-                  className="flex items-start space-x-3 p-3 rounded-lg border"
+                  className="flex items-start space-x-3 p-3 rounded-lg border border-border hover:bg-muted/30 transition-colors"
                 >
                   <Checkbox
                     id={symptom.key}
@@ -144,11 +148,11 @@ function NewAssessmentContent() {
                       handleSymptomChange(symptom.key, checked as boolean)
                     }
                   />
-                  <div className="space-y-1">
-                    <Label htmlFor={symptom.key} className="font-medium cursor-pointer">
+                  <div className="space-y-0.5">
+                    <Label htmlFor={symptom.key} className="text-sm font-medium cursor-pointer">
                       {symptom.label}
                     </Label>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-[0.6875rem] text-muted-foreground leading-relaxed">
                       {symptom.description}
                     </p>
                   </div>
@@ -158,23 +162,23 @@ function NewAssessmentContent() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="animate-fade-in" style={{ animationDelay: '240ms', animationFillMode: 'forwards', opacity: 0 }}>
           <CardHeader>
-            <CardTitle>Upload Files (Optional)</CardTitle>
+            <CardTitle className="text-sm font-medium">Upload Files (Optional)</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="border-2 border-dashed rounded-lg p-8 text-center">
-              <Upload className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
-              <p className="text-sm text-muted-foreground">
+            <div className="border border-dashed border-border rounded-lg p-8 text-center hover:bg-muted/20 transition-colors">
+              <Upload className="h-5 w-5 mx-auto text-muted-foreground mb-2" />
+              <p className="text-xs text-muted-foreground">
                 File upload coming soon. In production, upload MRI, EEG, or clinical data here.
               </p>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="animate-fade-in" style={{ animationDelay: '320ms', animationFillMode: 'forwards', opacity: 0 }}>
           <CardHeader>
-            <CardTitle>Additional Notes</CardTitle>
+            <CardTitle className="text-sm font-medium">Additional Notes</CardTitle>
           </CardHeader>
           <CardContent>
             <Textarea
@@ -182,19 +186,22 @@ function NewAssessmentContent() {
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={4}
+              className="text-sm"
             />
           </CardContent>
         </Card>
 
-        <div className="flex justify-end gap-4">
+        <div className="flex justify-end gap-3 animate-fade-in" style={{ animationDelay: '400ms', animationFillMode: 'forwards', opacity: 0 }}>
           <Link href="/assessments">
-            <Button variant="outline">Cancel</Button>
+            <Button variant="outline" size="sm">Cancel</Button>
           </Link>
           <Button
             type="submit"
+            size="sm"
             disabled={!selectedPatient || createMutation.isPending}
+            className="gap-2"
           >
-            <Brain className="mr-2 h-4 w-4" />
+            <Brain className="h-3.5 w-3.5" />
             {createMutation.isPending ? "Creating..." : "Create Assessment"}
           </Button>
         </div>
@@ -205,7 +212,7 @@ function NewAssessmentContent() {
 
 export default function NewAssessmentPage() {
   return (
-    <Suspense fallback={<div className="py-8 text-center text-muted-foreground">Loading...</div>}>
+    <Suspense fallback={<div className="py-8 text-center text-sm text-muted-foreground">Loading...</div>}>
       <NewAssessmentContent />
     </Suspense>
   );
