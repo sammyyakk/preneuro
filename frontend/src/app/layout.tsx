@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "PreNeuro - Early Neurodegenerative Disease Detection",
-  description: "AI-powered predictive screening for Alzheimer's, Parkinson's, and ALS",
+  title: "PreNeuro - AI-Powered Neurodegenerative Disease Detection",
+  description: "Early detection platform for Alzheimer's, Parkinson's, and ALS using advanced AI",
 };
 
 export default function RootLayout({
@@ -27,13 +27,18 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} h-full`}
+      suppressHydrationWarning
     >
-      <body className="min-h-full bg-background">
+      <body className="min-h-full bg-background antialiased">
         <Providers>
           <Sidebar />
-          <main className="lg:pl-64 min-h-screen">
-            <div className="p-6 lg:p-8">{children}</div>
+          <main className="lg:pl-72 min-h-screen">
+            <div className="gradient-mesh min-h-screen">
+              <div className="p-6 lg:p-8 pt-20 lg:pt-8 page-transition">
+                {children}
+              </div>
+            </div>
           </main>
         </Providers>
       </body>

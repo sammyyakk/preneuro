@@ -30,8 +30,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, Search, Trash2, Eye } from "lucide-react";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Plus, Search, Trash2, Eye, Users, UserPlus, Sparkles } from "lucide-react";
 import { format } from "date-fns";
 import Link from "next/link";
 
@@ -65,31 +65,37 @@ function CreatePatientDialog() {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger
         render={
-          <Button>
-            <Plus className="mr-2 h-4 w-4" />
+          <Button size="lg" className="gap-2">
+            <UserPlus className="h-4 w-4" />
             Add Patient
+            <Sparkles className="w-3 h-3 opacity-70" />
           </Button>
         }
       />
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Add New Patient</DialogTitle>
+          <DialogTitle className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center">
+              <UserPlus className="w-4 h-4 text-white" />
+            </div>
+            Add New Patient
+          </DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid gap-4">
+        <form onSubmit={handleSubmit} className="space-y-5 pt-2">
+          <div className="grid gap-5">
             <div className="space-y-2">
               <Label htmlFor="name">Full Name *</Label>
-              <Input id="name" name="name" required />
+              <Input id="name" name="name" placeholder="John Doe" required className="h-11" />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="date_of_birth">Date of Birth *</Label>
-                <Input id="date_of_birth" name="date_of_birth" type="date" required />
+                <Input id="date_of_birth" name="date_of_birth" type="date" required className="h-11" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="gender">Gender *</Label>
                 <Select name="gender" required>
-                  <SelectTrigger>
+                  <SelectTrigger className="h-11">
                     <SelectValue placeholder="Select gender" />
                   </SelectTrigger>
                   <SelectContent>
@@ -103,24 +109,31 @@ function CreatePatientDialog() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
-                <Input id="email" name="email" type="email" />
+                <Input id="email" name="email" type="email" placeholder="john@example.com" className="h-11" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="phone">Phone</Label>
-                <Input id="phone" name="phone" type="tel" />
+                <Input id="phone" name="phone" type="tel" placeholder="+1 234 567 890" className="h-11" />
               </div>
             </div>
             <div className="space-y-2">
               <Label htmlFor="notes">Notes</Label>
-              <Textarea id="notes" name="notes" rows={3} />
+              <Textarea id="notes" name="notes" rows={3} placeholder="Any additional information..." className="resize-none" />
             </div>
           </div>
-          <div className="flex justify-end gap-2">
+          <div className="flex justify-end gap-3 pt-2">
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>
               Cancel
             </Button>
-            <Button type="submit" disabled={createMutation.isPending}>
-              {createMutation.isPending ? "Creating..." : "Create Patient"}
+            <Button type="submit" disabled={createMutation.isPending} className="min-w-[120px]">
+              {createMutation.isPending ? (
+                <span className="flex items-center gap-2">
+                  <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  Creating...
+                </span>
+              ) : (
+                "Create Patient"
+              )}
             </Button>
           </div>
         </form>
@@ -129,7 +142,7 @@ function CreatePatientDialog() {
   );
 }
 
-function PatientRow({ patient }: { patient: Patient }) {
+function PatientRow({ patient, index }: { patient: Patient; index: number }) {
   const queryClient = useQueryClient();
 
   const deleteMutation = useMutation({
@@ -145,26 +158,37 @@ function PatientRow({ patient }: { patient: Patient }) {
   );
 
   return (
-    <TableRow>
-      <TableCell className="font-medium">{patient.name}</TableCell>
-      <TableCell>{age} years</TableCell>
-      <TableCell className="capitalize">{patient.gender}</TableCell>
-      <TableCell>{patient.email || "-"}</TableCell>
-      <TableCell>{format(new Date(patient.created_at), "MMM d, yyyy")}</TableCell>
+    <TableRow 
+      className="group hover:bg-muted/50 transition-colors animate-fade-in"
+      style={{ animationDelay: `${index * 50}ms`, animationFillMode: 'forwards', opacity: 0 }}
+    >
       <TableCell>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-full stat-gradient-1 flex items-center justify-center text-xs font-semibold text-white shadow-sm">
+            {patient.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+          </div>
+          <span className="font-medium">{patient.name}</span>
+        </div>
+      </TableCell>
+      <TableCell className="text-muted-foreground">{age} years</TableCell>
+      <TableCell className="capitalize text-muted-foreground">{patient.gender}</TableCell>
+      <TableCell className="text-muted-foreground">{patient.email || "—"}</TableCell>
+      <TableCell className="text-muted-foreground">{format(new Date(patient.created_at), "MMM d, yyyy")}</TableCell>
+      <TableCell>
+        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
           <Link href={`/patients/${patient.id}`}>
-            <Button variant="ghost" size="icon">
+            <Button variant="ghost" size="icon-sm" className="hover:bg-primary/10 hover:text-primary">
               <Eye className="h-4 w-4" />
             </Button>
           </Link>
           <Button
             variant="ghost"
-            size="icon"
+            size="icon-sm"
             onClick={() => deleteMutation.mutate(patient.id)}
             disabled={deleteMutation.isPending}
+            className="hover:bg-destructive/10 hover:text-destructive"
           >
-            <Trash2 className="h-4 w-4 text-destructive" />
+            <Trash2 className="h-4 w-4" />
           </Button>
         </div>
       </TableCell>
@@ -182,62 +206,80 @@ export default function PatientsPage() {
   });
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-6 max-w-7xl mx-auto">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 animate-fade-in">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Patients</h1>
-          <p className="text-muted-foreground">
-            Manage your patient records
+          <div className="flex items-center gap-2 mb-1">
+            <Users className="w-5 h-5 text-primary" />
+            <span className="text-sm font-medium text-primary">Patients</span>
+          </div>
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
+            Patient Records
+          </h1>
+          <p className="text-muted-foreground mt-1">
+            Manage and view all patient information
           </p>
         </div>
         <CreatePatientDialog />
       </div>
 
-      <Card>
-        <CardHeader>
-          <div className="flex items-center gap-4">
-            <div className="relative flex-1 max-w-sm">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search patients..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="pl-10"
-              />
-            </div>
+      <Card hover className="animate-fade-in" style={{ animationDelay: '100ms' }}>
+        <CardHeader className="pb-4">
+          <div className="relative max-w-md">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search patients by name..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="pl-10 h-11 bg-muted/30 border-0 focus:bg-background focus:ring-2 focus:ring-primary/20"
+            />
           </div>
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <div className="py-8 text-center text-muted-foreground">Loading...</div>
+            <div className="flex flex-col items-center justify-center py-16">
+              <div className="w-10 h-10 border-3 border-primary/30 border-t-primary rounded-full animate-spin" />
+              <p className="text-muted-foreground mt-4">Loading patients...</p>
+            </div>
           ) : data?.items.length === 0 ? (
-            <div className="py-8 text-center text-muted-foreground">
-              No patients found. Add your first patient to get started.
+            <div className="flex flex-col items-center justify-center py-16 text-center">
+              <div className="w-20 h-20 rounded-2xl bg-muted/50 flex items-center justify-center mb-4">
+                <Users className="w-10 h-10 text-muted-foreground/50" />
+              </div>
+              <p className="text-lg font-medium">No patients found</p>
+              <p className="text-muted-foreground mt-1 max-w-sm">
+                {search ? "Try a different search term" : "Add your first patient to get started"}
+              </p>
             </div>
           ) : (
             <>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Age</TableHead>
-                    <TableHead>Gender</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Created</TableHead>
-                    <TableHead>Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {data?.items.map((patient) => (
-                    <PatientRow key={patient.id} patient={patient} />
-                  ))}
-                </TableBody>
-              </Table>
+              <div className="rounded-xl border border-border/50 overflow-hidden">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-muted/30 hover:bg-muted/30">
+                      <TableHead className="font-semibold">Name</TableHead>
+                      <TableHead className="font-semibold">Age</TableHead>
+                      <TableHead className="font-semibold">Gender</TableHead>
+                      <TableHead className="font-semibold">Email</TableHead>
+                      <TableHead className="font-semibold">Created</TableHead>
+                      <TableHead className="font-semibold w-[100px]">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {data?.items.map((patient, index) => (
+                      <PatientRow key={patient.id} patient={patient} index={index} />
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
 
               {data && data.total > 10 && (
-                <div className="flex items-center justify-between mt-4">
+                <div className="flex items-center justify-between mt-6 pt-4 border-t border-border/50">
                   <p className="text-sm text-muted-foreground">
-                    Showing {(page - 1) * 10 + 1} to {Math.min(page * 10, data.total)} of {data.total}
+                    Showing <span className="font-medium text-foreground">{(page - 1) * 10 + 1}</span> to{" "}
+                    <span className="font-medium text-foreground">{Math.min(page * 10, data.total)}</span> of{" "}
+                    <span className="font-medium text-foreground">{data.total}</span> patients
                   </p>
                   <div className="flex gap-2">
                     <Button

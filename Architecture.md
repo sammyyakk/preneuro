@@ -20,7 +20,7 @@ Frontend → API Gateway → Backend → ML Models → Database
 - Handles auth
 - Rate limiting
 
----
+---Architec
 
 ### 2.3 Backend (FastAPI)
 
