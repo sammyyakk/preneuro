@@ -1,472 +1,434 @@
-# PreNeuro - Complete Project Documentation
+# PreNeuro — Documentation
 
-## AI-Powered Early Detection Platform for Neurodegenerative Diseases
-
----
-
-# Table of Contents
-
-1. [Executive Summary](#executive-summary)
-2. [Problem Statement](#problem-statement)
-3. [Solution Overview](#solution-overview)
-4. [Architecture](#architecture)
-5. [Technology Stack](#technology-stack)
-6. [System Design](#system-design)
-7. [Database Schema](#database-schema)
-8. [API Documentation](#api-documentation)
-9. [Frontend Architecture](#frontend-architecture)
-10. [ML/AI Component](#mlai-component)
-11. [Data Flow](#data-flow)
-12. [Security Considerations](#security-considerations)
-13. [Deployment Guide](#deployment-guide)
-14. [Future Roadmap](#future-roadmap)
-15. [Jury Q&A Preparation](#jury-qa-preparation)
+> **AI-Powered Predictive Screening for Neurodegenerative Diseases**
+>
+> Last Updated: March 28, 2026
 
 ---
 
-# Executive Summary
+## Table of Contents
 
-**PreNeuro** is an AI-powered screening platform designed for early detection of three major neurodegenerative diseases:
-- **Alzheimer's Disease** - Memory and cognitive decline
-- **Parkinson's Disease** - Motor function disorders
-- **ALS (Amyotrophic Lateral Sclerosis)** - Motor neuron disease
-
-## Key Value Proposition
-
-| Metric | Current State | With PreNeuro |
-|--------|---------------|---------------|
-| Early Detection Rate | ~50% | Target: 85%+ |
-| Time to Diagnosis | 2-5 years | < 6 months |
-| Screening Cost | $2,000-5,000 | < $100 |
-| Accessibility | Specialist only | Any healthcare provider |
-
-## MVP Features
-
-- Patient management system
-- Symptom-based risk assessment
-- AI-powered risk scoring (mock ML for MVP)
-- Interactive dashboard with visualizations
-- Multi-disease risk comparison
-- Assessment history tracking
+1. [Overview](#1-overview)
+2. [Architecture](#2-architecture)
+3. [Tech Stack](#3-tech-stack)
+4. [Project Structure](#4-project-structure)
+5. [Getting Started](#5-getting-started)
+6. [Backend (API)](#6-backend-api)
+7. [Frontend (UI)](#7-frontend-ui)
+8. [Database Schema](#8-database-schema)
+9. [API Reference](#9-api-reference)
+10. [ML Prediction Engine](#10-ml-prediction-engine)
+11. [Design System](#11-design-system)
+12. [Deployment](#12-deployment)
+13. [Environment Variables](#13-environment-variables)
+14. [Contributing](#14-contributing)
 
 ---
 
-# Problem Statement
+## 1. Overview
 
-## The Challenge
+**PreNeuro** is a full-stack web application designed for clinicians to perform early predictive screening of neurodegenerative diseases. It provides:
 
-Neurodegenerative diseases affect **50+ million people globally**, with numbers projected to triple by 2050.
+- **Patient Management** — Register and manage patient records with demographics, contact info, and medical history.
+- **Symptom-Based Assessment** — Conduct multi-symptom assessments from a predefined list of neurological indicators.
+- **AI-Powered Risk Prediction** — Generate risk scores for **Alzheimer's Disease**, **Parkinson's Disease**, and **ALS** using a symptom-weighted prediction engine.
+- **Interactive Dashboard** — Visualize risk data with bar and pie charts, track recent assessments, and monitor patient statistics.
+- **Theme Support** — Toggle between dark and light modes, with full design fidelity in both themes.
 
-### Current Diagnostic Issues
+### Who Is This For?
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                    DIAGNOSTIC TIMELINE                          │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                 │
-│  Symptom      Primary Care     Specialist      Diagnosis       │
-│  Onset        Visit            Referral        Confirmed       │
-│    │             │                │               │            │
-│    ▼             ▼                ▼               ▼            │
-│ ───●─────────────●────────────────●───────────────●───────►    │
-│    │             │                │               │            │
-│    │◄───6-12mo──►│◄────6-18mo───►│◄───3-12mo────►│            │
-│    │             │                │               │            │
-│    └─────────────┴────────────────┴───────────────┘            │
-│                   Total: 2-5 YEARS                              │
-│                                                                 │
-│  ⚠️  By diagnosis, 60-80% of neurons may already be damaged    │
-└─────────────────────────────────────────────────────────────────┘
-```
-
-### Key Statistics
-
-- **Alzheimer's**: 6.7 million Americans (65+), $355B annual cost
-- **Parkinson's**: 1 million Americans, $52B annual cost
-- **ALS**: 30,000 Americans, 80% mortality within 5 years
+- Neurologists and clinicians performing early-stage screening
+- Medical researchers studying neurodegenerative disease patterns
+- Healthcare organizations integrating predictive tools into clinical workflows
 
 ---
 
-# Solution Overview
+## 2. Architecture
 
-## How PreNeuro Works
+PreNeuro follows a **decoupled client-server architecture**:
 
 ```
-┌────────────────────────────────────────────────────────────────────┐
-│                     PreNeuro WORKFLOW                              │
-└────────────────────────────────────────────────────────────────────┘
-
-     ┌──────────┐      ┌──────────┐      ┌──────────┐      ┌──────────┐
-     │  INTAKE  │      │  ASSESS  │      │ ANALYZE  │      │  REPORT  │
-     │          │ ───► │          │ ───► │          │ ───► │          │
-     │ Patient  │      │ Symptoms │      │ AI/ML    │      │ Risk     │
-     │ Data     │      │ Input    │      │ Models   │      │ Scores   │
-     └──────────┘      └──────────┘      └──────────┘      └──────────┘
-          │                 │                 │                 │
-          ▼                 ▼                 ▼                 ▼
-     ┌──────────┐      ┌──────────┐      ┌──────────┐      ┌──────────┐
-     │Demographics     │Checkboxes│      │Weighted  │      │Color-    │
-     │Medical History  │Free Text │      │Scoring   │      │coded     │
-     │DOB, Gender      │8 Symptom │      │Algorithm │      │Dashboard │
-     │Contact Info     │Categories│      │(Mock ML) │      │Charts    │
-     └──────────┘      └──────────┘      └──────────┘      └──────────┘
+┌──────────────────────────┐         ┌──────────────────────────┐
+│                          │  HTTP   │                          │
+│     Next.js Frontend     │◄───────►│     FastAPI Backend      │
+│     (React 19, TS)       │  REST   │     (Python 3.11+)       │
+│                          │         │                          │
+│  ┌────────────────────┐  │         │  ┌────────────────────┐  │
+│  │ TanStack Query      │  │         │  │ SQLAlchemy ORM     │  │
+│  │ (Server State)      │  │         │  │ (Async Sessions)   │  │
+│  └────────────────────┘  │         │  └─────────┬──────────┘  │
+│                          │         │            │              │
+│  ┌────────────────────┐  │         │  ┌─────────▼──────────┐  │
+│  │ Recharts            │  │         │  │ ML Predictor       │  │
+│  │ (Data Viz)          │  │         │  │ (Symptom Weights)  │  │
+│  └────────────────────┘  │         │  └────────────────────┘  │
+└──────────────────────────┘         └──────────┬───────────────┘
+                                                │
+                                     ┌──────────▼───────────────┐
+                                     │     PostgreSQL 15        │
+                                     │     (Neon Serverless /   │
+                                     │      Docker Local)       │
+                                     └──────────────────────────┘
 ```
 
-## Symptom Categories Assessed
+### Data Flow
 
-| Symptom | Alzheimer's Weight | Parkinson's Weight | ALS Weight |
-|---------|-------------------|-------------------|------------|
-| Memory Issues | 0.30 | 0.05 | 0.02 |
-| Tremors | 0.05 | 0.35 | 0.05 |
-| Balance Problems | 0.10 | 0.25 | 0.15 |
-| Speech Difficulties | 0.10 | 0.10 | 0.25 |
-| Muscle Weakness | 0.05 | 0.10 | 0.35 |
-| Cognitive Decline | 0.25 | 0.05 | 0.08 |
-| Mood Changes | 0.10 | 0.05 | 0.05 |
-| Sleep Disturbances | 0.05 | 0.05 | 0.05 |
+1. **User Action** → Clinician interacts with the Next.js frontend (e.g., creates an assessment).
+2. **API Call** → Frontend sends a REST request to the FastAPI backend via `fetchApi()`.
+3. **Business Logic** → Backend validates input, queries the database, and performs operations.
+4. **ML Prediction** → When prediction is triggered, the backend runs the symptom-weighted algorithm.
+5. **Response** → Risk scores, recommendations, and status are returned to the frontend.
+6. **UI Update** → TanStack Query invalidates stale data and re-renders the UI.
 
 ---
 
-# Architecture
+## 3. Tech Stack
 
-## High-Level System Architecture
-
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                           PreNeuro ARCHITECTURE                         │
-└─────────────────────────────────────────────────────────────────────────┘
-
-                              ┌─────────────┐
-                              │   Client    │
-                              │  (Browser)  │
-                              └──────┬──────┘
-                                     │ HTTPS
-                                     ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│                              FRONTEND                                   │
-│  ┌──────────────────────────────────────────────────────────────────┐  │
-│  │                     Next.js 16 (App Router)                      │  │
-│  │  ┌────────────┐  ┌────────────┐  ┌────────────┐  ┌────────────┐  │  │
-│  │  │ Dashboard  │  │  Patients  │  │Assessments │  │   Charts   │  │  │
-│  │  │   Page     │  │   Page     │  │   Page     │  │ (Recharts) │  │  │
-│  │  └────────────┘  └────────────┘  └────────────┘  └────────────┘  │  │
-│  │  ┌────────────────────────────────────────────────────────────┐  │  │
-│  │  │              React Query (State Management)                 │  │  │
-│  │  └────────────────────────────────────────────────────────────┘  │  │
-│  └──────────────────────────────────────────────────────────────────┘  │
-│                                    │                                    │
-│                                    │ REST API (JSON)                    │
-│                                    ▼                                    │
-└────────────────────────────────────────────────────────────────────────┘
-                                     │
-                                     ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│                               BACKEND                                   │
-│  ┌──────────────────────────────────────────────────────────────────┐  │
-│  │                     FastAPI (Python 3.14)                        │  │
-│  │  ┌────────────┐  ┌────────────┐  ┌────────────┐  ┌────────────┐  │  │
-│  │  │  Users     │  │  Patients  │  │Assessments │  │ Prediction │  │  │
-│  │  │  API       │  │  API       │  │  API       │  │  API       │  │  │
-│  │  └────────────┘  └────────────┘  └────────────┘  └────────────┘  │  │
-│  │  ┌────────────────────────────────────────────────────────────┐  │  │
-│  │  │              SQLAlchemy (Async ORM)                         │  │  │
-│  │  └────────────────────────────────────────────────────────────┘  │  │
-│  │  ┌────────────────────────────────────────────────────────────┐  │  │
-│  │  │              ML Predictor Service (Mock)                    │  │  │
-│  │  └────────────────────────────────────────────────────────────┘  │  │
-│  └──────────────────────────────────────────────────────────────────┘  │
-│                                    │                                    │
-│                                    │ psycopg3                           │
-│                                    ▼                                    │
-└────────────────────────────────────────────────────────────────────────┘
-                                     │
-                                     ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│                              DATABASE                                   │
-│  ┌──────────────────────────────────────────────────────────────────┐  │
-│  │                    PostgreSQL 15 (Docker)                        │  │
-│  │  ┌────────────┐  ┌────────────┐  ┌────────────┐                  │  │
-│  │  │   users    │  │  patients  │  │assessments │                  │  │
-│  │  │   table    │  │   table    │  │   table    │                  │  │
-│  │  └────────────┘  └────────────┘  └────────────┘                  │  │
-│  └──────────────────────────────────────────────────────────────────┘  │
-└────────────────────────────────────────────────────────────────────────┘
-```
-
-## Component Interaction Flow
-
-```
-┌───────────────────────────────────────────────────────────────────────┐
-│                    COMPONENT INTERACTION DIAGRAM                       │
-└───────────────────────────────────────────────────────────────────────┘
-
-                Browser
-                   │
-        ┌──────────┼──────────┐
-        │          │          │
-        ▼          ▼          ▼
-   ┌────────┐ ┌────────┐ ┌────────┐
-   │Dashboard│ │Patients│ │Assess- │
-   │  Page   │ │  Page  │ │ ments  │
-   └───┬────┘ └───┬────┘ └───┬────┘
-       │          │          │
-       └──────────┼──────────┘
-                  │
-                  ▼
-         ┌────────────────┐
-         │  React Query   │
-         │ (Cache Layer)  │
-         └───────┬────────┘
-                 │
-                 ▼
-         ┌────────────────┐
-         │   API Client   │
-         │  (lib/api.ts)  │
-         └───────┬────────┘
-                 │ fetch()
-                 ▼
-    ═══════════════════════════  HTTP Boundary
-                 │
-                 ▼
-         ┌────────────────┐
-         │    FastAPI     │
-         │    Router      │
-         └───────┬────────┘
-                 │
-       ┌─────────┼─────────┐
-       │         │         │
-       ▼         ▼         ▼
-   ┌───────┐ ┌───────┐ ┌───────┐
-   │Users  │ │Patient│ │Assess-│
-   │Routes │ │Routes │ │Routes │
-   └───┬───┘ └───┬───┘ └───┬───┘
-       │         │         │
-       └─────────┼─────────┘
-                 │
-                 ▼
-         ┌────────────────┐
-         │   SQLAlchemy   │
-         │   (Async)      │
-         └───────┬────────┘
-                 │
-                 ▼
-         ┌────────────────┐
-         │   PostgreSQL   │
-         │   Database     │
-         └────────────────┘
-```
-
----
-
-# Technology Stack
-
-## Frontend Stack
+### Frontend
 
 | Technology | Version | Purpose |
-|------------|---------|---------|
-| Next.js | 16.x | React framework with App Router |
-| React | 19.x | UI library |
+|---|---|---|
+| Next.js | 16.2.1 | React framework (App Router) |
+| React | 19.2.4 | UI library |
 | TypeScript | 5.x | Type safety |
 | Tailwind CSS | 4.x | Utility-first styling |
-| ShadCN UI | Latest | Component library (Base UI variant) |
-| React Query | 5.x | Server state management |
-| Recharts | 2.x | Data visualization |
-| Lucide React | Latest | Icon library |
-| date-fns | Latest | Date formatting |
+| Recharts | 3.8.1 | Charts and data visualization |
+| TanStack Query | 5.95.2 | Server state management |
+| Lucide React | 1.7.0 | Icon library |
+| React Hook Form | 7.72.0 | Form management |
+| Zod | 4.3.6 | Schema validation |
+| Framer Motion | — | Animations (via tw-animate-css) |
 
-## Backend Stack
-
-| Technology | Version | Purpose |
-|------------|---------|---------|
-| Python | 3.14 | Runtime |
-| FastAPI | 0.115+ | Web framework |
-| SQLAlchemy | 2.x | Async ORM |
-| Pydantic | 2.x | Data validation |
-| psycopg | 3.x | PostgreSQL driver |
-| Uvicorn | Latest | ASGI server |
-
-## Infrastructure
+### Backend
 
 | Technology | Version | Purpose |
-|------------|---------|---------|
-| PostgreSQL | 15 | Database |
-| Docker | 24+ | Containerization |
-| Docker Compose | 2.x | Multi-container orchestration |
+|---|---|---|
+| FastAPI | ≥0.115.0 | Async Python web framework |
+| Uvicorn | ≥0.34.0 | ASGI server |
+| SQLAlchemy | ≥2.0.36 | Async ORM with PostgreSQL |
+| Psycopg | ≥3.2.0 | PostgreSQL driver |
+| Pydantic | ≥2.10.0 | Data validation and serialization |
+| Pydantic Settings | ≥2.6.0 | Configuration management |
+| Alembic | ≥1.14.0 | Database migrations |
+
+### Infrastructure
+
+| Technology | Purpose |
+|---|---|
+| PostgreSQL 15 | Primary database |
+| Docker Compose | Local development database |
+| Render | Backend hosting (production) |
+| Neon | Serverless PostgreSQL (production) |
+| Vercel | Frontend hosting (production) |
 
 ---
 
-# System Design
-
-## Directory Structure
+## 4. Project Structure
 
 ```
 preneuro/
-├── frontend/                          # Next.js Application
-│   ├── src/
-│   │   ├── app/                       # App Router Pages
-│   │   │   ├── layout.tsx             # Root layout with sidebar
-│   │   │   ├── page.tsx               # Dashboard
-│   │   │   ├── assessments/
-│   │   │   │   ├── page.tsx           # Assessment list
-│   │   │   │   ├── new/page.tsx       # New assessment form
-│   │   │   │   └── [id]/page.tsx      # Assessment details
-│   │   │   └── patients/
-│   │   │       ├── page.tsx           # Patient list
-│   │   │       └── [id]/page.tsx      # Patient details
-│   │   ├── components/
-│   │   │   ├── ui/                    # ShadCN components
-│   │   │   │   ├── button.tsx
-│   │   │   │   ├── card.tsx
-│   │   │   │   ├── dialog.tsx
-│   │   │   │   ├── input.tsx
-│   │   │   │   ├── select.tsx
-│   │   │   │   ├── table.tsx
-│   │   │   │   └── ...
-│   │   │   ├── dashboard/             # Dashboard components
-│   │   │   │   ├── stat-card.tsx
-│   │   │   │   └── risk-chart.tsx
-│   │   │   ├── sidebar.tsx            # Navigation sidebar
-│   │   │   └── providers.tsx          # React Query provider
-│   │   ├── lib/
-│   │   │   ├── api.ts                 # API client
-│   │   │   └── utils.ts               # Utilities
-│   │   └── types/
-│   │       └── index.ts               # TypeScript types
+├── .gitignore                  # Git ignore rules
+├── docker-compose.yml          # Local PostgreSQL container
+├── render.yaml                 # Render deployment config
+├── README.md                   # Quick start guide
+│
+├── backend/                    # FastAPI application
+│   ├── main.py                 # Application entry point
+│   ├── requirements.txt        # Python dependencies
+│   ├── Procfile                # Process file for Render
+│   ├── .env.example            # Environment template
+│   └── app/
+│       ├── __init__.py
+│       ├── config.py           # Settings (DB URL, CORS)
+│       ├── database.py         # SQLAlchemy engine & session
+│       ├── api/
+│       │   └── routes/
+│       │       ├── users.py        # User endpoints
+│       │       ├── patients.py     # Patient CRUD
+│       │       ├── assessments.py  # Assessment CRUD + predict
+│       │       └── predictions.py  # Direct prediction endpoints
+│       ├── models/
+│       │   ├── user.py         # User ORM model
+│       │   ├── patient.py      # Patient ORM model
+│       │   └── assessment.py   # Assessment ORM model
+│       ├── schemas/
+│       │   ├── user.py         # User Pydantic schemas
+│       │   ├── patient.py      # Patient Pydantic schemas
+│       │   └── assessment.py   # Assessment Pydantic schemas
+│       ├── ml/
+│       │   └── predictor.py    # Mock ML prediction engine
+│       └── services/
+│           └── __init__.py
+│
+├── frontend/                   # Next.js application
 │   ├── package.json
-│   ├── tailwind.config.ts
-│   └── tsconfig.json
+│   ├── next.config.ts
+│   ├── postcss.config.mjs
+│   ├── components.json         # ShadCN UI config
+│   └── src/
+│       ├── app/
+│       │   ├── layout.tsx          # Root layout
+│       │   ├── globals.css         # Design system & tokens
+│       │   ├── page.tsx            # Dashboard (home)
+│       │   ├── patients/
+│       │   │   ├── page.tsx        # Patient list
+│       │   │   └── [id]/page.tsx   # Patient detail
+│       │   └── assessments/
+│       │       ├── page.tsx        # Assessment list
+│       │       ├── new/page.tsx    # New assessment form
+│       │       └── [id]/page.tsx   # Assessment detail + charts
+│       ├── components/
+│       │   ├── sidebar.tsx         # Navigation sidebar
+│       │   ├── theme-toggle.tsx    # Dark/light mode toggle
+│       │   ├── providers.tsx       # TanStack Query provider
+│       │   ├── dashboard/
+│       │   │   ├── stats.tsx           # Stat cards
+│       │   │   ├── recent-assessments.tsx  # Recent list
+│       │   │   └── risk-chart.tsx      # Bar chart
+│       │   └── ui/                 # ShadCN UI primitives
+│       │       ├── button.tsx
+│       │       ├── card.tsx
+│       │       ├── input.tsx
+│       │       ├── select.tsx
+│       │       ├── table.tsx
+│       │       └── ... (12 components)
+│       ├── lib/
+│       │   ├── api.ts          # API client functions
+│       │   └── utils.ts        # Utility helpers (cn)
+│       └── types/
+│           └── index.ts        # TypeScript interfaces
 │
-├── backend/                           # FastAPI Application
-│   ├── app/
-│   │   ├── __init__.py
-│   │   ├── database.py                # DB connection
-│   │   ├── models/                    # SQLAlchemy models
-│   │   │   ├── __init__.py
-│   │   │   ├── user.py
-│   │   │   ├── patient.py
-│   │   │   └── assessment.py
-│   │   ├── schemas/                   # Pydantic schemas
-│   │   │   ├── __init__.py
-│   │   │   ├── user.py
-│   │   │   ├── patient.py
-│   │   │   └── assessment.py
-│   │   ├── api/                       # API routes
-│   │   │   ├── __init__.py
-│   │   │   └── routes/
-│   │   │       ├── __init__.py
-│   │   │       ├── users.py
-│   │   │       ├── patients.py
-│   │   │       └── assessments.py
-│   │   └── ml/                        # ML predictions
-│   │       ├── __init__.py
-│   │       └── predictor.py
-│   ├── main.py                        # FastAPI entry point
-│   ├── requirements.txt
-│   └── .env
-│
-├── docker-compose.yml                 # PostgreSQL container
-├── docs/                              # Documentation
-└── .env.example
+└── docs/                       # Documentation
+    ├── PRENEURO_DOCUMENTATION.md   # ← This file
+    ├── Architecture.md
+    ├── PRD.md
+    ├── Tech_Stack.md
+    └── DEPLOYMENT_GUIDE_FREE.md
 ```
 
 ---
 
-# Database Schema
+## 5. Getting Started
 
-## Entity Relationship Diagram
+### Prerequisites
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                    DATABASE SCHEMA (ERD)                            │
-└─────────────────────────────────────────────────────────────────────┘
+- **Node.js** 18+ and npm
+- **Python** 3.11+
+- **Docker** and Docker Compose (for local database)
+- **Git**
 
-┌──────────────────────┐         ┌──────────────────────┐
-│        users         │         │       patients       │
-├──────────────────────┤         ├──────────────────────┤
-│ id (PK)        INT   │◄────┐   │ id (PK)        INT   │
-│ email       VARCHAR  │     │   │ name        VARCHAR  │
-│ name        VARCHAR  │     │   │ date_of_birth DATE   │
-│ role        VARCHAR  │     │   │ gender      VARCHAR  │
-│ created_at TIMESTAMP │     │   │ email       VARCHAR  │
-└──────────────────────┘     │   │ phone       VARCHAR  │
-                             │   │ medical_history JSONB│
-                             │   │ notes         TEXT   │
-                             └───┤ created_by (FK) INT  │
-                                 │ created_at TIMESTAMP │
-                                 │ updated_at TIMESTAMP │
-                                 └──────────┬───────────┘
-                                            │
-                                            │ 1:N
-                                            ▼
-                                 ┌──────────────────────┐
-                                 │     assessments      │
-                                 ├──────────────────────┤
-                                 │ id (PK)        INT   │
-                                 │ patient_id (FK) INT  │
-                                 │ symptoms       JSONB │
-                                 │ uploaded_files JSONB │
-                                 │ alzheimer_risk FLOAT │
-                                 │ parkinson_risk FLOAT │
-                                 │ als_risk       FLOAT │
-                                 │ status       VARCHAR │
-                                 │ notes          TEXT  │
-                                 │ created_at TIMESTAMP │
-                                 │ completed_at TIMESTAMP│
-                                 └──────────────────────┘
+### Step 1: Clone the Repository
+
+```bash
+git clone https://github.com/sammyyakk/preneuro.git
+cd preneuro
 ```
 
-## Table Definitions
+### Step 2: Start the Local Database
 
-### Users Table
-```sql
-CREATE TABLE users (
-    id SERIAL PRIMARY KEY,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    name VARCHAR(255) NOT NULL,
-    role VARCHAR(50) NOT NULL DEFAULT 'doctor',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Default mock user for development
-INSERT INTO users (email, name, role) VALUES
-    ('doctor@preneuro.com', 'Dr. Sarah Chen', 'doctor');
+```bash
+docker-compose up -d
 ```
 
-### Patients Table
-```sql
-CREATE TABLE patients (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    date_of_birth DATE NOT NULL,
-    gender VARCHAR(20) NOT NULL,
-    email VARCHAR(255),
-    phone VARCHAR(50),
-    medical_history JSONB DEFAULT '{}',
-    notes TEXT,
-    created_by INTEGER REFERENCES users(id),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+This starts a PostgreSQL 15 container on **port 5433** (mapped from container's 5432).
+
+**Connection Details:**
+| Parameter | Value |
+|---|---|
+| Host | localhost |
+| Port | 5433 |
+| Database | preneuro |
+| User | preneuro |
+| Password | preneuro_dev |
+
+### Step 3: Set Up the Backend
+
+```bash
+cd backend
+python -m venv venv
+source venv/bin/activate        # macOS/Linux
+# venv\Scripts\activate          # Windows
+
+pip install -r requirements.txt
 ```
 
-### Assessments Table
-```sql
-CREATE TABLE assessments (
-    id SERIAL PRIMARY KEY,
-    patient_id INTEGER REFERENCES patients(id) ON DELETE CASCADE,
-    symptoms JSONB DEFAULT '{}',
-    uploaded_files JSONB DEFAULT '{}',
-    alzheimer_risk FLOAT,
-    parkinson_risk FLOAT,
-    als_risk FLOAT,
-    status VARCHAR(50) DEFAULT 'pending',
-    notes TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    completed_at TIMESTAMP
-);
+Create the `.env` file:
+
+```bash
+cp .env.example .env
 ```
 
-## Symptoms JSONB Structure
+Edit `.env` with:
+
+```env
+DATABASE_URL=postgresql+psycopg://preneuro:preneuro_dev@localhost:5433/preneuro
+CORS_ORIGINS=["http://localhost:3000"]
+```
+
+Start the backend:
+
+```bash
+uvicorn main:app --reload
+```
+
+The API starts at **http://localhost:8000**. Auto-generated docs at **http://localhost:8000/docs** (Swagger UI).
+
+> **Note:** On first startup, the database tables are automatically created and a mock user (`Dr. Sarah Chen`, `doctor@preneuro.com`) is seeded.
+
+### Step 4: Set Up the Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+The frontend starts at **http://localhost:3000**.
+
+> The frontend uses `NEXT_PUBLIC_API_URL` to connect to the backend. It defaults to `http://localhost:8000/api`. To point to the production API, set:
+>
+> ```env
+> NEXT_PUBLIC_API_URL=https://preneuro-api.onrender.com/api
+> ```
+
+---
+
+## 6. Backend (API)
+
+### Application Setup (`main.py`)
+
+The FastAPI application is configured with:
+
+- **CORS Middleware** — Allows cross-origin requests from the frontend (configurable via `CORS_ORIGINS`).
+- **Lifespan Events** — On startup, `init_db()` creates all database tables and seeds a mock user.
+- **Route Prefixes:**
+  - `/api/users` — User management
+  - `/api/patients` — Patient CRUD
+  - `/api/assessments` — Assessment CRUD and prediction trigger
+  - `/api/predict` — Direct prediction endpoints
+  - `/api/health` — Health check
+
+### Authentication
+
+The backend uses a **mock authentication system**. All requests are authenticated as user ID `1` (the seeded doctor). The `get_current_user()` dependency in each route returns:
+
+```python
+{"id": 1, "role": "doctor"}
+```
+
+This keeps the API functional for development and demonstrations without requiring a full auth system. In production, replace this with JWT-based authentication.
+
+### Database (`database.py`)
+
+- Uses **async SQLAlchemy** with `psycopg` driver.
+- `init_db()` creates tables on startup via `Base.metadata.create_all`.
+- Sessions are managed via `async_sessionmaker` with `get_db()` dependency injection.
+
+---
+
+## 7. Frontend (UI)
+
+### Pages
+
+| Route | Page | Description |
+|---|---|---|
+| `/` | Dashboard | Welcome message, stat cards (total patients, assessments, pending, completed), recent assessments list, risk analysis chart |
+| `/patients` | Patient List | Paginated table of all patients with search, add button |
+| `/patients/[id]` | Patient Detail | Individual patient profile, linked assessments |
+| `/assessments` | Assessment List | Paginated table of all assessments with status filters |
+| `/assessments/new` | New Assessment | Form: select patient → check symptoms → optional notes → generate report |
+| `/assessments/[id]` | Assessment Detail | Symptoms reported, risk comparison bar chart, disease risk score donut charts, overall risk level, recommendations |
+
+### Key Components
+
+- **`Sidebar`** — Fixed left navigation with links, user profile (Dr. Arjun Mehta), and theme toggle.
+- **`ThemeToggle`** — Persists light/dark preference to `localStorage`.
+- **`DashboardStats`** — Four stat cards fetching from `/api/assessments` and `/api/patients`.
+- **`RecentAssessments`** — Last 5 assessments with patient name and risk badge.
+- **`RiskChart`** — Recharts `BarChart` showing risk scores across the last 10 assessments.
+- **`Providers`** — Wraps the app in `QueryClientProvider` for TanStack Query.
+
+### State Management
+
+- **Server State**: All API data is managed by TanStack Query (`useQuery`, `useMutation`, `queryClient.invalidateQueries`).
+- **Client State**: Theme toggle uses `localStorage` and React state. No global state manager (Zustand, Redux) is needed.
+
+### API Client (`lib/api.ts`)
+
+A generic `fetchApi<T>()` wrapper handles:
+- Base URL resolution from `NEXT_PUBLIC_API_URL`
+- JSON serialization/deserialization
+- Error handling with readable messages
+
+Exports four API modules: `usersApi`, `patientsApi`, `assessmentsApi`, `predictionsApi`.
+
+---
+
+## 8. Database Schema
+
+### Entity Relationship Diagram
+
+```
+┌──────────────┐       ┌────────────────┐       ┌─────────────────┐
+│    users     │       │    patients    │       │   assessments   │
+├──────────────┤       ├────────────────┤       ├─────────────────┤
+│ id (PK)      │──┐    │ id (PK)        │──┐    │ id (PK)         │
+│ email        │  │    │ name           │  │    │ patient_id (FK) │
+│ name         │  │    │ date_of_birth  │  │    │ symptoms (JSONB)│
+│ role         │  └───►│ gender         │  └───►│ uploaded_files  │
+│ created_at   │       │ email          │       │ alzheimer_risk  │
+└──────────────┘       │ phone          │       │ parkinson_risk  │
+                       │ medical_history│       │ als_risk        │
+                       │ notes          │       │ status          │
+                       │ created_by(FK) │       │ notes           │
+                       │ created_at     │       │ created_at      │
+                       │ updated_at     │       │ completed_at    │
+                       └────────────────┘       └─────────────────┘
+```
+
+### Table: `users`
+
+| Column | Type | Constraints |
+|---|---|---|
+| `id` | Integer | Primary Key, Auto-increment |
+| `email` | String(255) | Unique, Indexed |
+| `name` | String(255) | Not Null |
+| `role` | Enum(`doctor`, `admin`) | Default: `doctor` |
+| `created_at` | DateTime | Default: UTC now |
+
+### Table: `patients`
+
+| Column | Type | Constraints |
+|---|---|---|
+| `id` | Integer | Primary Key, Auto-increment |
+| `name` | String(255) | Not Null |
+| `date_of_birth` | Date | Not Null |
+| `gender` | Enum(`male`, `female`, `other`) | Not Null |
+| `email` | String(255) | Nullable |
+| `phone` | String(50) | Nullable |
+| `medical_history` | JSONB | Nullable |
+| `notes` | Text | Nullable |
+| `created_by` | Integer | Foreign Key → `users.id` |
+| `created_at` | DateTime | Default: UTC now |
+| `updated_at` | DateTime | Default: UTC now, auto-updated |
+
+### Table: `assessments`
+
+| Column | Type | Constraints |
+|---|---|---|
+| `id` | Integer | Primary Key, Auto-increment |
+| `patient_id` | Integer | Foreign Key → `patients.id` |
+| `symptoms` | JSONB | Nullable |
+| `uploaded_files` | JSONB | Nullable |
+| `alzheimer_risk` | Float | Nullable (set after prediction) |
+| `parkinson_risk` | Float | Nullable (set after prediction) |
+| `als_risk` | Float | Nullable (set after prediction) |
+| `status` | Enum(`pending`, `processing`, `completed`, `failed`) | Default: `pending` |
+| `notes` | String(1000) | Nullable |
+| `created_at` | DateTime | Default: UTC now |
+| `completed_at` | DateTime | Nullable (set on completion) |
+
+### Symptoms JSONB Structure
 
 ```json
 {
@@ -478,87 +440,116 @@ CREATE TABLE assessments (
   "cognitive_decline": true,
   "mood_changes": false,
   "sleep_disturbances": true,
-  "additional_notes": "Patient reports difficulty remembering recent conversations"
+  "additional_notes": "Patient reports occasional disorientation."
 }
 ```
 
 ---
 
-# API Documentation
+## 9. API Reference
 
-## Base URL
+**Base URL:** `https://preneuro-api.onrender.com/api` (production) or `http://localhost:8000/api` (local)
 
-- **Development**: `http://localhost:8000/api`
-- **API Documentation**: `http://localhost:8000/docs` (Swagger UI)
+### Health Check
 
-## Endpoints Overview
+```
+GET /api/health
+```
 
-### Users API
+**Response:** `{ "status": "healthy" }`
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/users/me` | Get current user (mock auth) |
-| GET | `/api/users` | List all users |
+---
 
-### Patients API
+### Patients
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/patients` | Create new patient |
-| GET | `/api/patients` | List patients (paginated) |
-| GET | `/api/patients/{id}` | Get patient by ID |
-| PUT | `/api/patients/{id}` | Update patient |
-| DELETE | `/api/patients/{id}` | Delete patient |
+#### List Patients
 
-### Assessments API
+```
+GET /api/patients?page=1&page_size=10&search=sharma
+```
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/assessments` | Create new assessment |
-| GET | `/api/assessments` | List assessments (paginated) |
-| GET | `/api/assessments/{id}` | Get assessment by ID |
-| POST | `/api/assessments/{id}/predict` | Run AI prediction |
+**Response:**
 
-## Request/Response Examples
+```json
+{
+  "items": [
+    {
+      "id": 1,
+      "name": "Aarav Sharma",
+      "date_of_birth": "1985-03-15",
+      "gender": "male",
+      "email": "aarav.sharma@gmail.com",
+      "phone": "+919876543210",
+      "medical_history": null,
+      "notes": null,
+      "created_by": 1,
+      "created_at": "2026-03-27T21:37:22.367579",
+      "updated_at": "2026-03-27T21:37:22.367583"
+    }
+  ],
+  "total": 1,
+  "page": 1,
+  "page_size": 10
+}
+```
 
-### Create Patient
+#### Get Patient
 
-**Request:**
-```http
+```
+GET /api/patients/{id}
+```
+
+#### Create Patient
+
+```
 POST /api/patients
 Content-Type: application/json
 
 {
-  "name": "John Doe",
-  "date_of_birth": "1955-03-15",
-  "gender": "male",
-  "email": "john.doe@email.com",
-  "phone": "+1-555-0123",
-  "notes": "Family history of Alzheimer's"
+  "name": "Priya Patel",
+  "date_of_birth": "1972-07-22",
+  "gender": "female",
+  "email": "priya.patel@gmail.com",
+  "phone": "+919812345678"
 }
 ```
 
-**Response:**
-```json
+#### Update Patient
+
+```
+PUT /api/patients/{id}
+Content-Type: application/json
+
 {
-  "id": 1,
-  "name": "John Doe",
-  "date_of_birth": "1955-03-15",
-  "gender": "male",
-  "email": "john.doe@email.com",
-  "phone": "+1-555-0123",
-  "medical_history": {},
-  "notes": "Family history of Alzheimer's",
-  "created_by": 1,
-  "created_at": "2024-01-15T10:30:00Z",
-  "updated_at": "2024-01-15T10:30:00Z"
+  "notes": "Updated medical notes"
 }
 ```
 
-### Create Assessment & Run Prediction
+#### Delete Patient
 
-**Request:**
-```http
+```
+DELETE /api/patients/{id}
+```
+
+---
+
+### Assessments
+
+#### List Assessments
+
+```
+GET /api/assessments?page=1&page_size=10&patient_id=1&status=completed
+```
+
+#### Get Assessment
+
+```
+GET /api/assessments/{id}
+```
+
+#### Create Assessment
+
+```
 POST /api/assessments
 Content-Type: application/json
 
@@ -567,773 +558,320 @@ Content-Type: application/json
   "symptoms": {
     "memory_issues": true,
     "tremors": false,
-    "balance_problems": false,
+    "balance_problems": true,
     "speech_difficulties": false,
     "muscle_weakness": false,
     "cognitive_decline": true,
-    "mood_changes": true,
-    "sleep_disturbances": false,
-    "additional_notes": "Forgetting appointments frequently"
+    "mood_changes": false,
+    "sleep_disturbances": true
   },
-  "notes": "Initial screening assessment"
+  "notes": "Initial screening for cognitive concerns"
 }
 ```
 
-**Response (after prediction):**
+#### Run AI Prediction
+
+```
+POST /api/assessments/{id}/predict
+```
+
+**Response:**
+
 ```json
 {
-  "id": 1,
-  "patient_id": 1,
-  "symptoms": { ... },
-  "alzheimer_risk": 0.72,
-  "parkinson_risk": 0.15,
+  "alzheimer_risk": 0.65,
+  "parkinson_risk": 0.12,
   "als_risk": 0.08,
-  "status": "completed",
-  "notes": "Initial screening assessment",
-  "created_at": "2024-01-15T11:00:00Z",
-  "completed_at": "2024-01-15T11:00:05Z"
+  "confidence": 0.80,
+  "risk_level": "high",
+  "recommendations": [
+    "Urgent referral to neurology specialist",
+    "Comprehensive diagnostic workup recommended",
+    "Consider advanced imaging (PET, detailed MRI)",
+    "Evaluate for clinical trial eligibility",
+    "Schedule immediate follow-up within 2-4 weeks"
+  ]
 }
+```
+
+#### Delete Assessment
+
+```
+DELETE /api/assessments/{id}
 ```
 
 ---
 
-# Frontend Architecture
+### Direct Predictions
 
-## Component Hierarchy
+These endpoints allow running predictions without creating an assessment record.
+
+#### Predict All Diseases
 
 ```
-┌─────────────────────────────────────────────────────────────────────┐
-│                    FRONTEND COMPONENT TREE                          │
-└─────────────────────────────────────────────────────────────────────┘
+POST /api/predict/all
+Content-Type: application/json
 
-RootLayout (layout.tsx)
-├── QueryClientProvider (providers.tsx)
-│   └── Sidebar (sidebar.tsx)
-│       ├── Logo
-│       ├── Navigation Links
-│       │   ├── Dashboard
-│       │   ├── Patients
-│       │   └── Assessments
-│       └── User Info (mock)
-│
-├── Dashboard Page (page.tsx)
-│   ├── StatCard × 3
-│   │   ├── Total Patients
-│   │   ├── Pending Assessments
-│   │   └── Completed This Month
-│   ├── RiskChart (risk-chart.tsx)
-│   │   └── Recharts BarChart
-│   └── Recent Assessments Table
-│
-├── Patients Page (patients/page.tsx)
-│   ├── CreatePatientDialog
-│   │   └── Form with validation
-│   ├── Search Input
-│   └── PatientTable
-│       └── PatientRow × N
-│           ├── View Button → Patient Detail
-│           └── Delete Button
-│
-└── Assessments Page (assessments/page.tsx)
-    ├── Filters (status, patient)
-    ├── AssessmentTable
-    │   └── AssessmentRow × N
-    └── New Assessment Page (assessments/new/page.tsx)
-        ├── Patient Selector
-        ├── Symptoms Checklist (8 items)
-        ├── File Upload (placeholder)
-        └── Additional Notes
-```
-
-## State Management with React Query
-
-```typescript
-// Query Keys Structure
-const queryKeys = {
-  patients: {
-    all: ['patients'],
-    list: (page: number, search?: string) => ['patients', page, search],
-    detail: (id: number) => ['patients', id],
-  },
-  assessments: {
-    all: ['assessments'],
-    list: (page: number, status?: string) => ['assessments', page, status],
-    detail: (id: number) => ['assessments', id],
-  },
-};
-
-// Example Usage
-const { data, isLoading } = useQuery({
-  queryKey: ['patients', page, search],
-  queryFn: () => patientsApi.list(page, 10, search),
-});
-
-// Mutations with cache invalidation
-const createMutation = useMutation({
-  mutationFn: patientsApi.create,
-  onSuccess: () => {
-    queryClient.invalidateQueries({ queryKey: ['patients'] });
-  },
-});
-```
-
-## API Client Design
-
-```typescript
-// frontend/src/lib/api.ts
-
-const API_BASE = 'http://localhost:8000/api';
-
-async function fetchApi<T>(endpoint: string, options?: RequestInit): Promise<T> {
-  const response = await fetch(`${API_BASE}${endpoint}`, {
-    headers: { 'Content-Type': 'application/json' },
-    ...options,
-  });
-  if (!response.ok) throw new Error(`API Error: ${response.status}`);
-  return response.json();
+{
+  "symptoms": {
+    "memory_issues": true,
+    "cognitive_decline": true
+  }
 }
-
-export const patientsApi = {
-  list: (page: number, pageSize: number, search?: string) =>
-    fetchApi<PatientList>(`/patients?page=${page}&page_size=${pageSize}${search ? `&search=${search}` : ''}`),
-  get: (id: number) => fetchApi<Patient>(`/patients/${id}`),
-  create: (data: PatientCreate) => fetchApi<Patient>('/patients', { method: 'POST', body: JSON.stringify(data) }),
-  update: (id: number, data: Partial<PatientCreate>) => fetchApi<Patient>(`/patients/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
-  delete: (id: number) => fetchApi<void>(`/patients/${id}`, { method: 'DELETE' }),
-};
-
-export const assessmentsApi = {
-  list: (page: number, pageSize: number, status?: string, patientId?: number) =>
-    fetchApi<AssessmentList>(`/assessments?page=${page}&page_size=${pageSize}${status ? `&status=${status}` : ''}${patientId ? `&patient_id=${patientId}` : ''}`),
-  get: (id: number) => fetchApi<Assessment>(`/assessments/${id}`),
-  create: (data: AssessmentCreate) => fetchApi<Assessment>('/assessments', { method: 'POST', body: JSON.stringify(data) }),
-  predict: (id: number) => fetchApi<Assessment>(`/assessments/${id}/predict`, { method: 'POST' }),
-};
 ```
+
+#### Predict Single Disease
+
+```
+POST /api/predict/alzheimer
+POST /api/predict/parkinson
+POST /api/predict/als
+```
+
+Same request body as above. Returns single disease result with `risk`, `confidence`, `risk_level`, and `recommendations`.
 
 ---
 
-# ML/AI Component
+## 10. ML Prediction Engine
 
-## Current Implementation (Mock)
+### Current Implementation (Mock)
 
-The MVP uses a **weighted scoring algorithm** that simulates ML predictions for demonstration purposes.
+The prediction engine (`backend/app/ml/predictor.py`) uses a **symptom-weighted scoring algorithm** to simulate AI predictions. This is designed as a placeholder to be replaced by trained models in production.
 
-### Prediction Algorithm
+### Symptom Weights
+
+Each disease has a unique weight mapping for the 8 assessed symptoms:
+
+| Symptom | Alzheimer's | Parkinson's | ALS |
+|---|---|---|---|
+| Memory Issues | **0.35** | — | — |
+| Cognitive Decline | **0.30** | — | 0.10 |
+| Mood Changes | 0.15 | — | — |
+| Speech Difficulties | 0.10 | 0.15 | **0.25** |
+| Sleep Disturbances | 0.10 | 0.10 | — |
+| Tremors | — | **0.35** | 0.10 |
+| Balance Problems | — | 0.25 | 0.15 |
+| Muscle Weakness | — | 0.15 | **0.40** |
+
+### Risk Calculation
+
+```
+Base Risk = Σ (symptom_present × weight)
+Noise = random(-0.10, +0.15)        # Simulates model uncertainty
+Final Risk = clamp(Base Risk + Noise, 0.0, 1.0)
+```
+
+### Risk Levels
+
+| Score Range | Level | Action |
+|---|---|---|
+| 0.00 – 0.29 | **Low** | Routine monitoring, 12-month follow-up |
+| 0.30 – 0.59 | **Moderate** | Neurological evaluation, 3-6 month follow-up |
+| 0.60 – 1.00 | **High** | Urgent specialist referral, advanced imaging, 2-4 week follow-up |
+
+### Confidence Score
+
+```
+Confidence = min(0.95, 0.60 + (symptom_count × 0.05) + file_bonus)
+```
+
+Where `file_bonus = 0.05` if diagnostic files are uploaded.
+
+### Upgrading to Real Models
+
+To integrate trained models, replace the `predict_risks()` function in `predictor.py`:
 
 ```python
-# backend/app/ml/predictor.py
-
-class MockPredictor:
-    """Mock ML predictor using weighted symptom scoring"""
-
-    # Disease-specific symptom weights (based on medical literature)
-    ALZHEIMER_WEIGHTS = {
-        "memory_issues": 0.30,      # Primary indicator
-        "cognitive_decline": 0.25,   # Primary indicator
-        "speech_difficulties": 0.10,
-        "mood_changes": 0.10,
-        "balance_problems": 0.10,
-        "sleep_disturbances": 0.05,
-        "tremors": 0.05,
-        "muscle_weakness": 0.05,
-    }
-
-    PARKINSON_WEIGHTS = {
-        "tremors": 0.35,            # Primary indicator
-        "balance_problems": 0.25,    # Primary indicator
-        "muscle_weakness": 0.10,
-        "speech_difficulties": 0.10,
-        "sleep_disturbances": 0.05,
-        "mood_changes": 0.05,
-        "cognitive_decline": 0.05,
-        "memory_issues": 0.05,
-    }
-
-    ALS_WEIGHTS = {
-        "muscle_weakness": 0.35,     # Primary indicator
-        "speech_difficulties": 0.25, # Primary indicator
-        "balance_problems": 0.15,
-        "cognitive_decline": 0.08,
-        "tremors": 0.05,
-        "mood_changes": 0.05,
-        "sleep_disturbances": 0.05,
-        "memory_issues": 0.02,
-    }
-
-    def predict(self, symptoms: dict) -> dict:
-        """Calculate risk scores based on symptom weights"""
-        alzheimer_score = sum(
-            weight for symptom, weight in self.ALZHEIMER_WEIGHTS.items()
-            if symptoms.get(symptom, False)
-        )
-        parkinson_score = sum(
-            weight for symptom, weight in self.PARKINSON_WEIGHTS.items()
-            if symptoms.get(symptom, False)
-        )
-        als_score = sum(
-            weight for symptom, weight in self.ALS_WEIGHTS.items()
-            if symptoms.get(symptom, False)
-        )
-
-        # Add small random variance for realism
-        import random
-        variance = lambda: random.uniform(-0.05, 0.05)
-
-        return {
-            "alzheimer_risk": min(1.0, max(0.0, alzheimer_score + variance())),
-            "parkinson_risk": min(1.0, max(0.0, parkinson_score + variance())),
-            "als_risk": min(1.0, max(0.0, als_score + variance())),
-        }
-```
-
-### Risk Score Interpretation
-
-| Risk Score | Level | Interpretation | Recommended Action |
-|------------|-------|----------------|-------------------|
-| 0.0 - 0.3 | Low | Minimal indicators | Routine monitoring |
-| 0.3 - 0.6 | Moderate | Some concerning signs | Follow-up screening |
-| 0.6 - 1.0 | High | Strong indicators | Specialist referral |
-
-## Future ML Implementation Roadmap
-
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                    ML IMPLEMENTATION ROADMAP                        │
-└─────────────────────────────────────────────────────────────────────┘
-
-Phase 1: MVP (Current)          Phase 2: Enhanced             Phase 3: Full ML
-━━━━━━━━━━━━━━━━━━━            ━━━━━━━━━━━━━━━━━━━           ━━━━━━━━━━━━━━━━━━━
-┌────────────────────┐         ┌────────────────────┐        ┌────────────────────┐
-│  Weighted Scoring  │         │  Statistical ML    │        │  Deep Learning     │
-│  Algorithm         │    →    │  (Random Forest)   │   →    │  (Neural Networks) │
-└────────────────────┘         └────────────────────┘        └────────────────────┘
-        │                              │                             │
-        ▼                              ▼                             ▼
-┌────────────────────┐         ┌────────────────────┐        ┌────────────────────┐
-│ • Symptom-based    │         │ • ADNI dataset     │        │ • MRI image analysis│
-│ • Binary inputs    │         │ • PPMI dataset     │        │ • EEG signal proc. │
-│ • Quick demo       │         │ • Feature eng.     │        │ • Multi-modal fusion│
-└────────────────────┘         └────────────────────┘        └────────────────────┘
-```
-
-### Datasets for Real ML Training
-
-| Disease | Dataset | Size | Features |
-|---------|---------|------|----------|
-| Alzheimer's | ADNI (Alzheimer's Disease Neuroimaging Initiative) | 2,000+ subjects | MRI, PET, CSF biomarkers |
-| Alzheimer's | OASIS (Open Access Series of Imaging Studies) | 1,000+ subjects | MRI scans |
-| Parkinson's | PPMI (Parkinson's Progression Markers Initiative) | 1,400+ subjects | DaTscan, MRI, clinical data |
-| ALS | PRO-ACT (Pooled Resource Open-Access ALS Clinical Trials) | 10,000+ records | Clinical progression data |
-
-### Proposed Model Architecture (Future)
-
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│              MULTI-MODAL DEEP LEARNING ARCHITECTURE                 │
-└─────────────────────────────────────────────────────────────────────┘
-
-Input Modalities:
-                    ┌──────────────┐
-    MRI Images ───► │  3D CNN      │──┐
-                    └──────────────┘  │
-                    ┌──────────────┐  │    ┌──────────────┐
-    EEG Signals ──► │  1D CNN +    │──┼───►│   Fusion     │
-                    │  LSTM        │  │    │   Layer      │
-                    └──────────────┘  │    └──────┬───────┘
-                    ┌──────────────┐  │           │
-    Clinical    ──► │  Dense NN    │──┘           ▼
-    Features        └──────────────┘      ┌──────────────┐
-                                          │  Multi-task  │
-                                          │  Output      │
-                                          └──────────────┘
-                                                 │
-                      ┌──────────────────────────┼──────────────────────────┐
-                      │                          │                          │
-                      ▼                          ▼                          ▼
-               ┌────────────┐            ┌────────────┐            ┌────────────┐
-               │ Alzheimer's│            │ Parkinson's│            │    ALS     │
-               │   Risk     │            │   Risk     │            │   Risk     │
-               └────────────┘            └────────────┘            └────────────┘
+def predict_risks(symptoms, uploaded_files):
+    # 1. Preprocess symptoms into feature tensor
+    # 2. Load MRI/EEG files if provided
+    # 3. Run inference on trained PyTorch/TF models
+    # 4. Calibrate and return PredictionResult
+    pass
 ```
 
 ---
 
-# Data Flow
+## 11. Design System
 
-## Complete User Journey
+### Philosophy
 
+PreNeuro uses a **minimal, futuristic, monochrome** design with strategic color accents for medical data. The visual language is:
+
+- **Monochrome base** — Deep black backgrounds with subtle gray borders
+- **Color-coded risks** — Purple (Alzheimer's), Blue (Parkinson's), Rose (ALS)
+- **130% font scale** — All fonts are 30% larger than default for clinical readability
+- **Micro-grid background** — Subtle animated mesh for depth
+
+### Theme System
+
+CSS variables are defined in `globals.css` using HSL values in two modes:
+
+- **Dark mode** (default) — AMOLED-black backgrounds, white text
+- **Light mode** — Clean white backgrounds, dark text
+
+Theme toggle persists to `localStorage` via `ThemeToggle` component.
+
+### Key Design Tokens (Dark Mode)
+
+```css
+--background: 0 0% 2%;           /* Near-black */
+--foreground: 0 0% 95%;          /* Near-white */
+--card: 0 0% 5%;                 /* Card surfaces */
+--border: 0 0% 12%;              /* Subtle borders */
+--primary: 0 0% 90%;             /* Primary actions */
+--muted-foreground: 0 0% 50%;    /* Secondary text */
 ```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                         PRENEURO DATA FLOW                                  │
-└─────────────────────────────────────────────────────────────────────────────┘
 
-STEP 1: Patient Registration
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+### Typography
 
-    User fills form          API Request              Database
-    ┌─────────────┐         ┌─────────────┐         ┌─────────────┐
-    │ Name: John  │ ──────► │POST /api/   │ ──────► │INSERT INTO  │
-    │ DOB: 1955   │         │patients     │         │patients     │
-    │ Gender: M   │         │{json body}  │         │VALUES (...)│
-    └─────────────┘         └─────────────┘         └─────────────┘
-                                   │
-                                   ▼
-                            ┌─────────────┐
-                            │ Response:   │
-                            │ {id: 1, ...}│
-                            └─────────────┘
+- **Font Family:** `var(--font-geist-sans)` for body, `var(--font-geist-mono)` for labels
+- **Root Scale:** `html { font-size: 130% }` — All `rem` values are globally increased by 30%
+- **Hardcoded sizes** converted to rem: `text-[10px]` → `text-[0.625rem]`, `text-[11px]` → `text-[0.6875rem]`
 
-STEP 2: Create Assessment
-━━━━━━━━━━━━━━━━━━━━━━━━━━
+### Chart Colors
 
-    Symptoms Form           API Request              Database
-    ┌─────────────┐         ┌─────────────┐         ┌─────────────┐
-    │☑ Memory     │ ──────► │POST /api/   │ ──────► │INSERT INTO  │
-    │☐ Tremors    │         │assessments  │         │assessments  │
-    │☑ Cognitive  │         │{patient_id, │         │(patient_id, │
-    │☐ Balance    │         │ symptoms}   │         │ symptoms)   │
-    └─────────────┘         └─────────────┘         └─────────────┘
-                                   │
-                                   ▼
-                            ┌─────────────┐
-                            │ Assessment  │
-                            │ id: 1       │
-                            │ status:     │
-                            │ "pending"   │
-                            └─────────────┘
-
-STEP 3: Run Prediction
-━━━━━━━━━━━━━━━━━━━━━━━
-
-    Click Predict           API Request              ML Service
-    ┌─────────────┐         ┌─────────────┐         ┌─────────────┐
-    │ [Run AI     │ ──────► │POST /api/   │ ──────► │ Predictor.  │
-    │  Analysis]  │         │assessments/ │         │ predict()   │
-    │             │         │{id}/predict │         │             │
-    └─────────────┘         └─────────────┘         └──────┬──────┘
-                                                          │
-                                                          ▼
-                                                   ┌─────────────┐
-                                                   │ alzheimer:  │
-                                                   │   0.72      │
-                                                   │ parkinson:  │
-                                                   │   0.15      │
-                                                   │ als: 0.08   │
-                                                   └──────┬──────┘
-                                                          │
-                            Database                      │
-                            ┌─────────────┐              │
-                            │UPDATE       │◄─────────────┘
-                            │assessments  │
-                            │SET risks,   │
-                            │status=      │
-                            │'completed'  │
-                            └─────────────┘
-
-STEP 4: View Results
-━━━━━━━━━━━━━━━━━━━━━
-
-    Dashboard               API Request              Response
-    ┌─────────────┐         ┌─────────────┐         ┌─────────────┐
-    │  📊 Charts  │ ◄────── │GET /api/    │ ◄────── │ {risks,     │
-    │  📈 Stats   │         │assessments/1│         │  status,    │
-    │  📋 Details │         │             │         │  patient}   │
-    └─────────────┘         └─────────────┘         └─────────────┘
-```
+| Disease | Color | Hex |
+|---|---|---|
+| Alzheimer's | Purple | `#a78bfa` |
+| Parkinson's | Blue | `#60a5fa` |
+| ALS | Rose | `#fb7185` |
 
 ---
 
-# Security Considerations
+## 12. Deployment
 
-## Current MVP Security
+### Production URLs
 
-| Aspect | Implementation | Status |
-|--------|----------------|--------|
-| Authentication | Mock (hardcoded user) | Demo only |
-| Authorization | None | Demo only |
-| Data Encryption | HTTPS (in production) | Planned |
-| Input Validation | Pydantic schemas | ✓ Implemented |
-| SQL Injection | SQLAlchemy ORM | ✓ Protected |
-| CORS | Configured for localhost | ✓ Implemented |
+| Service | URL |
+|---|---|
+| **Backend API** | https://preneuro-api.onrender.com/api |
+| **API Docs (Swagger)** | https://preneuro-api.onrender.com/docs |
+| **Database** | Neon Serverless PostgreSQL |
 
-## Production Security Roadmap
+### Backend on Render
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                    SECURITY IMPLEMENTATION PLAN                     │
-└─────────────────────────────────────────────────────────────────────┘
+The backend is deployed on Render using the `render.yaml` blueprint:
 
-Priority 1: Authentication
-├── JWT-based authentication
-├── Password hashing (bcrypt)
-├── Session management
-└── OAuth2 integration (optional)
-
-Priority 2: Authorization
-├── Role-based access control (RBAC)
-├── Resource-level permissions
-└── Audit logging
-
-Priority 3: Data Protection
-├── HIPAA compliance measures
-├── Data encryption at rest
-├── Secure file storage
-└── PII handling procedures
-
-Priority 4: Infrastructure
-├── HTTPS/TLS certificates
-├── Rate limiting
-├── DDoS protection
-└── Security headers
+```yaml
+services:
+  - type: web
+    name: preneuro-backend
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
 ```
 
-## HIPAA Compliance Considerations
+**Required Environment Variables on Render:**
 
-For healthcare deployment, the following would be required:
+| Variable | Description |
+|---|---|
+| `DATABASE_URL` | Neon PostgreSQL connection string |
+| `CORS_ORIGINS` | JSON array of allowed frontend origins |
+| `PORT` | Auto-set by Render |
 
-1. **Technical Safeguards**
-   - Access controls and audit logs
-   - Automatic session timeout
-   - Encryption (AES-256)
+> **Note:** Render's free tier spins down the service after 15 minutes of inactivity. The first request after downtime may take 30-60 seconds.
 
-2. **Administrative Safeguards**
-   - User access policies
-   - Security training documentation
-   - Incident response procedures
+### Frontend on Vercel
 
-3. **Physical Safeguards**
-   - Secure data center hosting
-   - Backup and disaster recovery
-
----
-
-# Deployment Guide
-
-## Local Development Setup
-
-### Prerequisites
-
-- Docker & Docker Compose
-- Node.js 20+
-- Python 3.14+
-- pnpm (or npm)
-
-### Quick Start
+Deploy the `frontend/` directory to Vercel:
 
 ```bash
-# 1. Clone repository
-git clone <repository-url>
-cd preneuro
-
-# 2. Start PostgreSQL
-docker-compose up -d
-
-# 3. Setup Backend
-cd backend
-python -m venv venv
-source venv/bin/activate  # or `venv\Scripts\activate` on Windows
-pip install -r requirements.txt
-uvicorn main:app --reload
-
-# 4. Setup Frontend (new terminal)
 cd frontend
-pnpm install
-pnpm dev
-
-# 5. Access application
-# Frontend: http://localhost:3000
-# Backend API: http://localhost:8000
-# API Docs: http://localhost:8000/docs
+npx vercel --prod
 ```
 
-### Environment Variables
+Set the environment variable:
 
-**Backend (.env)**
+```
+NEXT_PUBLIC_API_URL=https://preneuro-api.onrender.com/api
+```
+
+### Database on Neon
+
+The production database uses Neon Serverless PostgreSQL. Tables are auto-created on backend startup via `init_db()`.
+
+---
+
+## 13. Environment Variables
+
+### Root (`.env.example`)
+
 ```env
-DATABASE_URL=postgresql+psycopg://preneuro:preneuro@localhost:5433/preneuro
-DEBUG=true
-CORS_ORIGINS=http://localhost:3000
+DATABASE_URL=postgresql+psycopg://preneuro:preneuro_dev@localhost:5433/preneuro
+BACKEND_CORS_ORIGINS=http://localhost:3000
+NEXT_PUBLIC_API_URL=http://localhost:8000/api
 ```
 
-**Frontend (.env.local)**
+### Backend (`backend/.env.example`)
+
+```env
+DATABASE_URL=postgresql+psycopg://user:password@host:5432/dbname
+CORS_ORIGINS=["http://localhost:3000"]
+```
+
+### Frontend
+
+Set via `.env.local` (not committed):
+
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:8000/api
 ```
 
-## Production Deployment
+For production:
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                    PRODUCTION ARCHITECTURE                          │
-└─────────────────────────────────────────────────────────────────────┘
-
-                              Internet
-                                 │
-                                 ▼
-                         ┌──────────────┐
-                         │   CDN/WAF    │
-                         │  (Cloudflare)│
-                         └──────┬───────┘
-                                │
-                                ▼
-                         ┌──────────────┐
-                         │ Load Balancer│
-                         │   (nginx)    │
-                         └──────┬───────┘
-                                │
-                ┌───────────────┼───────────────┐
-                │               │               │
-                ▼               ▼               ▼
-         ┌──────────┐    ┌──────────┐    ┌──────────┐
-         │ Frontend │    │ Backend  │    │ Backend  │
-         │ (Vercel) │    │ Instance │    │ Instance │
-         └──────────┘    └────┬─────┘    └────┬─────┘
-                              │               │
-                              └───────┬───────┘
-                                      │
-                                      ▼
-                              ┌──────────────┐
-                              │  PostgreSQL  │
-                              │  (AWS RDS)   │
-                              └──────────────┘
-```
-
-### Deployment Options
-
-| Component | Recommended | Alternative |
-|-----------|-------------|-------------|
-| Frontend | Vercel | Netlify, AWS S3+CloudFront |
-| Backend | AWS ECS / Railway | Render, DigitalOcean |
-| Database | AWS RDS PostgreSQL | Supabase, PlanetScale |
-| ML Models | AWS SageMaker | Google Vertex AI |
-
----
-
-# Future Roadmap
-
-## Short-term (1-3 months)
-
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                         SHORT-TERM ROADMAP                          │
-└─────────────────────────────────────────────────────────────────────┘
-
-□ Real Authentication System
-  ├── JWT implementation
-  ├── Password reset flow
-  └── Multi-factor authentication
-
-□ Enhanced Patient Management
-  ├── Medical history forms
-  ├── Document attachments
-  └── Family history tracking
-
-□ Improved ML Predictions
-  ├── Train on ADNI/PPMI datasets
-  ├── Confidence intervals
-  └── Explainable AI (SHAP values)
-
-□ Reporting Features
-  ├── PDF report generation
-  ├── Assessment comparison
-  └── Trend analysis
-```
-
-## Medium-term (3-6 months)
-
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                         MEDIUM-TERM ROADMAP                         │
-└─────────────────────────────────────────────────────────────────────┘
-
-□ Multi-modal Input Support
-  ├── MRI image upload & analysis
-  ├── EEG data processing
-  └── Cognitive test integration
-
-□ Clinical Workflow Integration
-  ├── HL7 FHIR compliance
-  ├── EHR system connectors
-  └── Lab result imports
-
-□ Advanced Analytics Dashboard
-  ├── Population health metrics
-  ├── Risk stratification
-  └── Predictive modeling
-```
-
-## Long-term (6-12 months)
-
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                         LONG-TERM VISION                            │
-└─────────────────────────────────────────────────────────────────────┘
-
-□ FDA Clearance Path
-  ├── Clinical validation studies
-  ├── Regulatory documentation
-  └── Quality management system
-
-□ Research Platform Features
-  ├── Anonymized data sharing
-  ├── Research collaboration tools
-  └── Clinical trial recruitment
-
-□ Global Expansion
-  ├── Multi-language support
-  ├── Regional compliance (GDPR)
-  └── Telemedicine integration
+```env
+NEXT_PUBLIC_API_URL=https://preneuro-api.onrender.com/api
 ```
 
 ---
 
-# Jury Q&A Preparation
+## 14. Contributing
 
-## Technical Questions
+### Development Workflow
 
-### Q: Why did you choose this tech stack?
-**A:** We selected technologies optimized for healthcare applications:
-- **Next.js 16**: Server-side rendering for fast initial loads, crucial for clinical settings
-- **FastAPI**: Async Python for high-performance API with automatic OpenAPI documentation
-- **PostgreSQL**: HIPAA-compliant database with JSON support for flexible medical data
-- **React Query**: Efficient caching reduces API calls, important for large patient databases
+1. **Fork** the repository
+2. **Create a feature branch**: `git checkout -b feature/your-feature`
+3. **Make changes** and test locally
+4. **Commit**: `git commit -m "feat: description of change"`
+5. **Push**: `git push origin feature/your-feature`
+6. **Open a Pull Request** against `main`
 
-### Q: How does your ML model work?
-**A:** Currently we use a weighted scoring algorithm based on peer-reviewed medical literature that maps symptoms to disease risk. For production:
-- We'll train on ADNI (Alzheimer's) and PPMI (Parkinson's) datasets
-- Use ensemble methods (Random Forest + Neural Networks)
-- Implement SHAP values for explainable predictions
+### Commit Convention
 
-### Q: How do you handle data privacy?
-**A:** Our architecture is designed for HIPAA compliance:
-- All data encrypted in transit (TLS) and at rest
-- Role-based access control
-- Audit logging for all patient record access
-- Data anonymization capabilities for research use
+Follow [Conventional Commits](https://www.conventionalcommits.org/):
 
-### Q: What's your accuracy rate?
-**A:** The MVP mock model demonstrates the concept. Real ML implementation targeting:
-- Sensitivity: >85% (minimize false negatives)
-- Specificity: >80% (reduce unnecessary referrals)
-- AUC-ROC: >0.90 based on comparable research
+| Prefix | Usage |
+|---|---|
+| `feat:` | New features |
+| `fix:` | Bug fixes |
+| `docs:` | Documentation updates |
+| `style:` | Formatting, no logic change |
+| `refactor:` | Code restructuring |
+| `test:` | Adding/updating tests |
+| `chore:` | Maintenance tasks |
 
-### Q: How does this scale?
-**A:** Architecture supports horizontal scaling:
-- Stateless API servers can scale behind load balancer
-- PostgreSQL supports read replicas
-- ML inference can be distributed (AWS SageMaker endpoints)
-- Target: 10,000+ concurrent users
-
-## Business Questions
-
-### Q: What's Competitive differentiation?
-**A:**
-1. **Multi-disease screening**: Single platform for 3 diseases vs. separate tools
-2. **Accessibility**: Primary care integration vs. specialist-only tools
-3. **Cost**: Target $50-100 per screening vs. $2,000+ traditional assessment
-4. **Speed**: Results in minutes vs. weeks/months
-
-### Q: What's the market size?
-**A:**
-- Total Addressable Market (TAM): $15B (neurodegenerative diagnostics)
-- Serviceable Addressable Market (SAM): $3B (AI-enhanced screening)
-- Serviceable Obtainable Market (SOM): $300M (US primary care market)
-
-### Q: What's your go-to-market strategy?
-**A:**
-1. **Phase 1**: Partner with 3-5 memory care clinics for pilot
-2. **Phase 2**: Expand to primary care networks
-3. **Phase 3**: Direct integration with major EHR systems
-4. **Phase 4**: International expansion (EU, Asia)
-
-### Q: What's the revenue model?
-**A:**
-- **B2B SaaS**: $500-2,000/month per clinic
-- **Per-assessment**: $15-50 per screening
-- **Enterprise**: Custom pricing for hospital networks
-- **Research**: Data licensing for pharmaceutical companies
-
-### Q: Who's your target customer?
-**A:**
-- Primary care physicians
-- Neurologists
-- Memory care clinics
-- Senior living facilities
-- Insurance companies (preventive care)
-
-## Impact Questions
-
-### Q: What's the social impact?
-**A:**
-1. **Earlier intervention**: Detecting diseases 2-5 years earlier when treatments are most effective
-2. **Cost reduction**: $200B+ potential savings from early intervention
-3. **Equity**: Bringing specialist-level screening to underserved areas
-4. **Quality of life**: More time for patients to plan, participate in trials
-
-### Q: How do you address bias in AI?
-**A:**
-- Training data must represent diverse populations
-- Regular bias audits across demographics
-- Transparent model performance metrics by subgroup
-- Clinical oversight for all predictions
-
-### Q: What if the AI is wrong?
-**A:**
-- Predictions are screening aids, not diagnoses
-- All results reviewed by licensed physicians
-- Clear confidence intervals and uncertainty quantification
-- Liability framework aligned with medical device regulations
-
----
-
-# Appendix
-
-## A. API Response Codes
-
-| Code | Meaning |
-|------|---------|
-| 200 | Success |
-| 201 | Created |
-| 400 | Bad Request (validation error) |
-| 404 | Resource Not Found |
-| 500 | Internal Server Error |
-
-## B. Environment Setup Checklist
-
-- [ ] Docker installed and running
-- [ ] Node.js 20+ installed
-- [ ] Python 3.14+ installed
-- [ ] PostgreSQL container running on port 5433
-- [ ] Backend virtual environment activated
-- [ ] Frontend dependencies installed
-- [ ] Environment variables configured
-
-## C. Useful Commands
+### Running Locally
 
 ```bash
-# Database
-docker-compose up -d          # Start PostgreSQL
-docker-compose down           # Stop PostgreSQL
-docker-compose logs postgres  # View DB logs
+# Terminal 1: Database
+docker-compose up -d
 
-# Backend
-uvicorn main:app --reload     # Start with hot reload
-pip freeze > requirements.txt # Update dependencies
+# Terminal 2: Backend
+cd backend && source venv/bin/activate && uvicorn main:app --reload
 
-# Frontend
-pnpm dev                      # Development server
-pnpm build                    # Production build
-pnpm lint                     # Run linter
+# Terminal 3: Frontend
+cd frontend && npm run dev
 ```
 
-## D. Contact & Resources
+### Code Style
 
-- **Documentation**: `/docs/` directory
-- **API Specs**: `http://localhost:8000/docs`
-- **Issue Tracking**: GitHub Issues
+- **Python:** Follow PEP 8, use async/await consistently
+- **TypeScript:** Strict mode, use interfaces over types for objects
+- **CSS:** Use Tailwind utilities; define custom tokens in `globals.css`
 
 ---
 
-*Document generated for PreNeuro hackathon submission*
-*Last updated: 2026-03-28*
+*Built by [Samyak Jain](https://github.com/sammyyakk) — PreNeuro v1.0.0*

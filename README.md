@@ -1,49 +1,80 @@
 # PreNeuro
 
-AI-powered predictive screening platform for early detection of neurodegenerative diseases.
+> AI-Powered Predictive Screening for Neurodegenerative Diseases
+
+[![Backend](https://img.shields.io/badge/API-Live-brightgreen)](https://preneuro-api.onrender.com/docs)
+[![Tech](https://img.shields.io/badge/Stack-Next.js%20%2B%20FastAPI-blue)]()
+
+## What Is PreNeuro?
+
+PreNeuro is a clinical screening tool that uses symptom-weighted prediction algorithms to assess risk levels for **Alzheimer's Disease**, **Parkinson's Disease**, and **ALS**. Built for neurologists and healthcare providers.
+
+### Features
+
+- 🧠 **AI Risk Prediction** — Automated risk scoring across three neurodegenerative diseases
+- 👥 **Patient Management** — Full CRUD with search and pagination
+- 📊 **Interactive Dashboard** — Live charts, stat cards, and recent activity
+- 🔬 **Multi-Symptom Assessment** — 8 neurological indicators with clinical recommendations
+- 🌗 **Dark/Light Theme** — Premium monochrome design with theme persistence
+- 📱 **Responsive Design** — Works on desktop and tablet
 
 ## Quick Start
 
-### Prerequisites
-- Docker & Docker Compose
-- Node.js 18+
-- Python 3.11+
-
-### 1. Start Database
 ```bash
+# 1. Clone
+git clone https://github.com/sammyyakk/preneuro.git
+cd preneuro
+
+# 2. Start database
 docker-compose up -d
-```
 
-### 2. Setup Backend
-```bash
+# 3. Start backend
 cd backend
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+python -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
+cp .env.example .env
 uvicorn main:app --reload
-```
-Backend runs at: http://localhost:8000
-API docs: http://localhost:8000/docs
+# → http://localhost:8000/docs
 
-### 3. Setup Frontend
-```bash
-cd frontend
+# 4. Start frontend
+cd ../frontend
 npm install
 npm run dev
+# → http://localhost:3000
 ```
-Frontend runs at: http://localhost:3000
-
-## Features
-- Patient management
-- Multi-symptom assessment
-- AI-powered risk prediction for:
-  - Alzheimer's Disease
-  - Parkinson's Disease
-  - ALS
-- Risk visualization dashboard
-- Assessment history tracking
 
 ## Tech Stack
-- **Frontend**: Next.js 15, React, TypeScript, Tailwind CSS, ShadCN UI
-- **Backend**: FastAPI, SQLAlchemy, PostgreSQL
-- **ML**: Mock predictions (ready for real model integration)
+
+| Layer | Technology |
+|---|---|
+| **Frontend** | Next.js 16, React 19, TypeScript, Tailwind CSS 4, Recharts, TanStack Query |
+| **Backend** | FastAPI, SQLAlchemy (Async), Pydantic v2 |
+| **Database** | PostgreSQL 15 (Docker local, Neon production) |
+| **Deployment** | Render (API), Vercel (UI), Neon (DB) |
+
+## Production
+
+| Service | URL |
+|---|---|
+| API | https://preneuro-api.onrender.com/api |
+| Swagger Docs | https://preneuro-api.onrender.com/docs |
+
+## Documentation
+
+Full documentation is available at [`docs/PRENEURO_DOCUMENTATION.md`](docs/PRENEURO_DOCUMENTATION.md), covering:
+
+- Architecture and data flow
+- Complete API reference with examples
+- Database schema and relationships
+- ML prediction engine details
+- Design system and theming
+- Deployment guides
+- Environment variable reference
+
+## License
+
+MIT
+
+---
+
+*Built by [Samyak Jain](https://github.com/sammyyakk)*
