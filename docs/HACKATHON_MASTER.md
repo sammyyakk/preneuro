@@ -1,7 +1,5 @@
 # PreNeuro — Hackathon Master Document
 ### AI-Powered Predictive Screening for Neurodegenerative Diseases
-
-> **Version:** 1.0.0 | **Date:** March 28, 2026 | **Author:** Samyak Jain
 >
 > *This document is the single source of truth for the PreNeuro project — covering problem statement, solution, full technical implementation, live system state, and future roadmap.*
 

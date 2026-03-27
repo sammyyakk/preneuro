@@ -76,5 +76,3 @@ Full documentation is available at [`docs/PRENEURO_DOCUMENTATION.md`](docs/PRENE
 MIT
 
 ---
-
-*Built by [Samyak Jain](https://github.com/sammyyakk)*

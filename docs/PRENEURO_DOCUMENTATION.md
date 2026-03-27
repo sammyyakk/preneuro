@@ -873,5 +873,3 @@ cd frontend && npm run dev
 - **CSS:** Use Tailwind utilities; define custom tokens in `globals.css`
 
 ---
-
-*Built by [Samyak Jain](https://github.com/sammyyakk) — PreNeuro v1.0.0*
