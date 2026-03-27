@@ -1135,7 +1135,3 @@ Every patient and assessment query filters by `created_by == current_user.id`. W
 ```
 
 ---
-
-*PreNeuro v1.0.0 — Built by Samyak Jain*  
-*GitHub: https://github.com/sammyyakk/preneuro*  
-*API: https://preneuro-api.onrender.com/docs*
